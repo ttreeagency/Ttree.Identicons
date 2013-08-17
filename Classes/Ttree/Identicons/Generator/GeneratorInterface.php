@@ -12,7 +12,6 @@ namespace Ttree\Identicons\Generator;
  *                                                                        */
 
 use TYPO3\Flow\Annotations as Flow;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Generator Interface
@@ -24,7 +23,7 @@ interface GeneratorInterface {
 	/**
 	 * @param string $hash
 	 * @param int $size
-	 * @return mixed
+	 * @return \Imagine\Image\ImageInterface
 	 */
 	public function generate($hash, $size = NULL);
 
