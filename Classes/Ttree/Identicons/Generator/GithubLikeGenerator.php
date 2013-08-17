@@ -11,8 +11,11 @@ namespace Ttree\Identicons\Generator;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Imagine\Filter\Basic\FlipHorizontally;
+use Imagine\Image\Box;
+use Imagine\Image\Color;
+use Imagine\Image\Point;
 use TYPO3\Flow\Annotations as Flow;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Original Don Park identicon generator
@@ -21,16 +24,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class GithubLikeGenerator extends AbstractGenerator {
 
-	const IMAGE_FLIP_HORIZONTAL = 1;
-
-	const IMAGE_FLIP_VERTICAL = 2;
-
-	const IMAGE_FLIP_BOTH = 3;
+	/**
+	 * @var \Imagine\Image\Color
+	 */
+	protected $foregroundColor;
 
 	/**
-	 * @param string $hash
-	 * @param int $size
-	 * @return resource
+	 * {@inheritdoc}
 	 */
 	public function generate($hash, $size = NULL) {
 		$size = $size ? : $this->getSize();
@@ -39,77 +39,64 @@ class GithubLikeGenerator extends AbstractGenerator {
 		$bottomCornerSpriteShape = hexdec(substr($hash, 1, 1));
 		$topSideSpriteShape      = hexdec(substr($hash, 2, 1)) & 2;
 		$middleSideSpriteShape   = hexdec(substr($hash, 3, 1)) & 2;
-		$centerSpriteShape       = hexdec(substr($hash, 4, 1)) & 7;
+		$centerSpriteShape       = hexdec(substr($hash, 4, 1)) & 2;
 		$bottomSpriteShape       = hexdec(substr($hash, 5, 1)) & 7;
 
-		$foregroundColorRed   = hexdec(substr($hash, 6, 2));
-		$foregroundColorBlue  = hexdec(substr($hash, 8, 2));
-		$foregroundColorGreen = hexdec(substr($hash, 10, 2));
+		$this->generateForegroundColor($hash);
 
-		$identicon = imagecreatetruecolor($size * 2.5, $size * 2.5);
+		$identicon = $this->createImage($size * 2.5, $size * 2.5);
 
-		$backgroundColor = $this->getBackgroundColor($identicon);
-		imagefilledrectangle($identicon, 0, 0, $size, $size, $backgroundColor);
+		$flipFilter = new FlipHorizontally();
 
-		$topCorner = $this->getSquareSprite($topCornerSpriteShape, $foregroundColorRed, $foregroundColorBlue, $foregroundColorGreen);
-		imagecopy($identicon, $topCorner, 0, 0, 0, 0, $size, $size);
-		$topCorner = $this->flipImage($topCorner, self::IMAGE_FLIP_VERTICAL);
-		imagecopy($identicon, $topCorner, $size * 1.5, 0, 0, 0, $size, $size);
+		$topCorner = $this->getSquareSprite($topCornerSpriteShape);
+		$identicon->paste($topCorner, new Point(0, 0));
+		$identicon->paste($flipFilter->apply($topCorner), new Point($size * 1.5, 0));
 
-		$bottomCorner = $this->getSquareSprite($bottomCornerSpriteShape, $foregroundColorRed, $foregroundColorBlue, $foregroundColorGreen);
-		imagecopy($identicon, $bottomCorner, 0, $size * 1.5, 0, 0, $size, $size);
-		$bottomCorner = $this->flipImage($bottomCorner, self::IMAGE_FLIP_VERTICAL);
-		imagecopy($identicon, $bottomCorner, $size * 1.5, $size * 1.5, 0, 0, $size, $size);
+		$bottomCorner = $this->getSquareSprite($bottomCornerSpriteShape);
+		$identicon->paste($bottomCorner, new Point(0, $size * 1.5));
+		$identicon->paste($flipFilter->apply($bottomCorner), new Point($size * 1.5, $size * 1.5));
 
-		$topSide = $this->getRectangularSprite($topSideSpriteShape, $foregroundColorRed, $foregroundColorBlue, $foregroundColorGreen, 90);
-		imagecopy($identicon, $topSide, $size, 0, 0, 0, $size / 2, $size);
+		$topSide = $this->getRectangularSprite($topSideSpriteShape, 90);
+		$identicon->paste($topSide, new Point($size, 0));
 
-		$leftMiddleSide = $this->getRectangularSprite($middleSideSpriteShape, $foregroundColorRed, $foregroundColorBlue, $foregroundColorGreen, 0);
-		imagecopy($identicon, $leftMiddleSide, 0, $size, 0, 0, $size, $size / 2);
+		$leftMiddleSide = $this->getRectangularSprite($middleSideSpriteShape, 0);
+		$identicon->paste($leftMiddleSide, new Point(0, $size));
+		$identicon->paste($flipFilter->apply($leftMiddleSide), new Point($size * 1.5, $size));
 
-		$rightMiddleSide = $this->flipImage($leftMiddleSide, self::IMAGE_FLIP_VERTICAL);
-		imagecopy($identicon, $rightMiddleSide, $size * 1.5, $size, 0, 0, $size, $size / 2);
+		$bottomSide = $this->getRectangularSprite($bottomSpriteShape, 90);
+		$identicon->paste($bottomSide, new Point($size, $size * 1.5));
 
-		$bottomSide = $this->getRectangularSprite($bottomSpriteShape, $foregroundColorRed, $foregroundColorBlue, $foregroundColorGreen, 90);
-		imagecopy($identicon, $bottomSide, $size, $size * 1.5, 0, 0, $size / 2, $size);
+		$center = $this->getCenter($centerSpriteShape);
+		$identicon->paste($center, new Point($size, $size));
 
-		$center = $this->getCenter($centerSpriteShape, $foregroundColorRed, $foregroundColorBlue, $foregroundColorGreen);
-		imagecopy($identicon, $center, $size, $size, 0, 0, $size / 2, $size / 2);
-
-		/* create blank image according to specified dimensions */
-		$resized = imagecreatetruecolor($size, $size);
-
-		/* assign white as background */
-		$backgroundColor = $this->getBackgroundColor($resized);
-		imagefilledrectangle($resized, 0, 0, $size, $size, $backgroundColor);
-
-		/* resize identicon according to specification */
-		imagecopyresampled($resized, $identicon, 30, 30, (imagesx($identicon) - $size * 2.5) / 2, (imagesx($identicon) - $size * 2.5) / 2, $size - 60, $size - 60, $size * 2.5, $size * 2.5);
+		$size    = $identicon->getSize();
+		$padding = $this->getSize() / 2;
+		$resized = $this->createImage($size->getWidth() + $padding, $size->getHeight() + $padding);
+		$resized->paste($identicon, new Point($padding / 2, $padding / 2))->resize(new Box($this->getSize(), $this->getSize()));
 
 		return $resized;
 	}
 
 	/**
-	 * @param resource $sprite
-	 * @return int
+	 * @param string $hash
 	 */
-	protected function getBackgroundColor($sprite) {
-		return imagecolorallocate($sprite, 235, 235, 235);
+	protected function generateForegroundColor($hash) {
+		$this->foregroundColor = new Color(array(
+			hexdec(substr($hash, 6, 2)),
+			hexdec(substr($hash, 8, 2)),
+			hexdec(substr($hash, 10, 2))
+		));
 	}
+
 
 	/**
 	 * @param int $shape
-	 * @param int $red
-	 * @param int $green
-	 * @param int $blue
 	 * @param float $rotation
-	 * @return resource
+	 * @return \Imagine\Image\ImageInterface
+	 * @throws \Exception
 	 */
-	protected function getSquareSprite($shape, $red, $green, $blue, $rotation = NULL) {
-		$sprite          = imagecreatetruecolor($this->getSize(), $this->getSize());
-		$foregroundColor = imagecolorallocate($sprite, $red, $green, $blue);
-		$backgroundColor = $this->getBackgroundColor($sprite);
-		imagefilledrectangle($sprite, 0, 0, $this->getSize(), $this->getSize(), $backgroundColor);
+	protected function getSquareSprite($shape, $rotation = NULL) {
+		$sprite = $this->createImage($this->getSize(), $this->getSize());
 		switch ($shape) {
 			case 1:
 				$shape = array(
@@ -190,99 +177,47 @@ class GithubLikeGenerator extends AbstractGenerator {
 				);
 				break;
 		}
-		/* apply ratios */
+		$size   = $sprite->getSize();
+		$square = $this->createImage(0.5 * $this->getSize(), 0.5 * $this->getSize(), $this->foregroundColor);
 		for ($i = 0; $i < count($shape); $i++) {
 			if ($shape[$i] === 0) {
 				continue;
 			}
+			$position = NULL;
 			switch ($i) {
 				case 0:
-					imagefilledrectangle($sprite, 0, 0, 0.5 * $this->getSize(), 0.5 * $this->getSize(), $foregroundColor);
+					$position = new Point(0, 0, $size->getWidth() / 2, $size->getHeight() / 2);
 					break;
 				case 1:
-					imagefilledrectangle($sprite, 0.5 * $this->getSize(), 0 * $this->getSize(), 1 * $this->getSize(), 0.5 * $this->getSize(), $foregroundColor);
+					$position = new Point($size->getWidth() / 2, 0, $size->getWidth(), $size->getHeight() / 2);
 					break;
 				case 2:
-					imagefilledrectangle($sprite, 0 * $this->getSize(), 0.5 * $this->getSize(), 0.5 * $this->getSize(), 1 * $this->getSize(), $foregroundColor);
+					$position = new Point(0, $size->getHeight() / 2, $size->getWidth() / 2, $size->getHeight());
 					break;
 				case 3:
-					imagefilledrectangle($sprite, 0.5 * $this->getSize(), 0.5 * $this->getSize(), 1 * $this->getSize(), 1 * $this->getSize(), $foregroundColor);
+					$position = new Point($size->getWidth() / 2, $size->getHeight() / 2, $size->getWidth(), $size->getHeight());
 					break;
 			}
+			if ($position === NULL) {
+				throw new \Exception('Invalid position', 1376733310);
+			}
+			$sprite->paste($square, $position);
 		}
 
-		if ($rotation !== NULL) {
-			$sprite = imagerotate($sprite, $rotation, $backgroundColor);
-		}
+		$sprite = $this->rotate($sprite, $rotation);
 
 		return $sprite;
 	}
 
 	/**
-	 * @param resource $imageResource
-	 * @param int $mode
-	 * @return resource
-	 */
-	protected function flipImage($imageResource, $mode) {
-		if (function_exists('imageflip')) {
-			return imageflip($imageResource, $mode);
-		}
-
-		$width  = imagesx($imageResource);
-		$height = imagesy($imageResource);
-
-		$srcX      = 0;
-		$srcY      = 0;
-		$srcWidth  = $width;
-		$srcHeight = $height;
-
-		switch ((int)$mode) {
-
-			case self::IMAGE_FLIP_HORIZONTAL:
-				$srcY      = $height;
-				$srcHeight = -$height;
-				break;
-
-			case self::IMAGE_FLIP_VERTICAL:
-				$srcX     = $width;
-				$srcWidth = -$width;
-				break;
-
-			case self::IMAGE_FLIP_BOTH:
-				$srcX      = $width;
-				$srcY      = $height;
-				$srcWidth  = -$width;
-				$srcHeight = -$height;
-				break;
-
-			default:
-				return $imageResource;
-		}
-
-		$imgdest = imagecreatetruecolor($width, $height);
-
-		if (imagecopyresampled($imgdest, $imageResource, 0, 0, $srcX, $srcY, $width, $height, $srcWidth, $srcHeight)) {
-			return $imgdest;
-		}
-
-		return $imageResource;
-	}
-
-	/**
 	 * @param int $shape
-	 * @param int $red
-	 * @param int $green
-	 * @param int $blue
 	 * @param float $rotation
-	 * @return resource
+	 * @return \Imagine\Image\ImageInterface
+	 * @throws \Exception
 	 */
-	protected function getRectangularSprite($shape, $red, $green, $blue, $rotation = NULL) {
-		$width           = $this->getSize();
-		$height          = $this->getSize() / 2;
-		$sprite          = imagecreatetruecolor($width, $height);
-		$foregroundColor = imagecolorallocate($sprite, $red, $green, $blue);
-		$backgroundColor = $this->getBackgroundColor($sprite);
-		imagefilledrectangle($sprite, 0, 0, $width, $height, $backgroundColor);
+	protected function getRectangularSprite($shape, $rotation = NULL) {
+		$sprite = $this->createImage($this->getSize(), $this->getSize() / 2);
+
 		switch ($shape) {
 			case 1:
 				$shape = array(
@@ -316,56 +251,49 @@ class GithubLikeGenerator extends AbstractGenerator {
 				break;
 		}
 
-		/* apply ratios */
+		$size   = $sprite->getSize();
+		$square = $this->createImage(0.5 * $this->getSize(), 0.5 * $this->getSize(), $this->foregroundColor);
 		for ($i = 0; $i < count($shape); $i++) {
 			if ($shape[$i] === 0) {
 				continue;
 			}
+			$position = NULL;
 			switch ($i) {
 				case 0:
-					imagefilledrectangle($sprite, 0.5 * $width, 0 * $height, 1 * $width, 1 * $height, $foregroundColor);
+					$position = new Point($size->getWidth() / 2, 0, $size->getWidth(), $size->getHeight());
 					break;
 				case 1:
-					imagefilledrectangle($sprite, 0, 0, 0.5 * $width, 1 * $height, $foregroundColor);
+					$position = new Point(0, 0, $size->getWidth() / 2, $size->getHeight());
 					break;
 			}
+			if ($position === NULL) {
+				throw new \Exception('Invalid position', 1376743851);
+			}
+			$sprite->paste($square, $position);
 		}
 
-		if ($rotation !== NULL) {
-			$sprite = imagerotate($sprite, $rotation, $backgroundColor);
-		}
+		$sprite = $this->rotate($sprite, $rotation);
 
 		return $sprite;
 	}
 
 	/**
 	 * @param int $shape
-	 * @param int $red
-	 * @param int $green
-	 * @param int $blue
-	 * @return resource
+	 * @return \Imagine\Image\ImageInterface
 	 */
-	protected function getCenter($shape, $red, $green, $blue) {
-		$size            = $this->getSize();
-		$sprite          = imagecreatetruecolor($size, $size);
-		$foregroundColor = imagecolorallocate($sprite, $red, $green, $blue);
-		$backgroundColor = $this->getBackgroundColor($sprite);
-		imagefilledrectangle($sprite, 0, 0, $size, $size, $backgroundColor);
+	protected function getCenter($shape) {
 		switch ($shape) {
-			case 0: // empty
-				$shape = TRUE;
+			case 0:
+				$color = $this->foregroundColor;
 				break;
-			case 1: // fill
-				$shape = FALSE;
+			case 1:
+				$color = $this->foregroundColor;
+				break;
+			case 2:
+				$color = $this->backgroundColor;
 				break;
 		}
-		if ($shape === TRUE) {
-			imagefilledrectangle($sprite, 0, 0, $size, $size, $foregroundColor);
-		} else {
-			imagefilledrectangle($sprite, 0, 0, $size, $size, $backgroundColor);
-		}
-
-		return $sprite;
+		return $this->createImage($this->getSize() / 2, $this->getSize() / 2, $color);
 	}
 }
 

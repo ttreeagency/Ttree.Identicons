@@ -1,4 +1,5 @@
 Ttree:
   Identicons:
     persist: FALSE
-    size: 320
+    size: 420
+    backgroundColor: '#EEE'

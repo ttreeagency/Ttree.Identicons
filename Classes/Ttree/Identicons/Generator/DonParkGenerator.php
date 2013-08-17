@@ -11,8 +11,10 @@ namespace Ttree\Identicons\Generator;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Imagine\Image\Box;
+use Imagine\Image\Color;
+use Imagine\Image\Point;
 use TYPO3\Flow\Annotations as Flow;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Original Don Park identicon generator
@@ -45,52 +47,28 @@ class DonParkGenerator extends AbstractGenerator {
 		$sideSpriteForegroundColorGreen = hexdec(substr($hash, 14, 2));
 		$sideSpriteForegroundColorBlue  = hexdec(substr($hash, 16, 2));
 
-		$identicon = imagecreatetruecolor($size * 3, $size * 3);
-		imageantialias($identicon, TRUE);
-
-		$backgroundColor = imagecolorallocate($identicon, 255, 255, 255);
-		imagefilledrectangle($identicon, 0, 0, $size, $size, $backgroundColor);
+		$backgroundColor = new Color(array(255, 255, 255));
+		$identicon       = $this->createImage($size * 3, $size * 3, $backgroundColor);
 
 		$corner = $this->getSprite($cornerSpriteShape, $cornerSpriteForegroundColorRed, $cornerSpriteForegroundColorGreen, $cornerSpriteForegroundColorBlue, $cornerSpriteRotation);
-		imagecopy($identicon, $corner, 0, 0, 0, 0, $size, $size);
-		$corner = imagerotate($corner, 90, $backgroundColor);
-		imagecopy($identicon, $corner, 0, $size * 2, 0, 0, $size, $size);
-		$corner = imagerotate($corner, 90, $backgroundColor);
-		imagecopy($identicon, $corner, $size * 2, $size * 2, 0, 0, $size, $size);
-		$corner = imagerotate($corner, 90, $backgroundColor);
-		imagecopy($identicon, $corner, $size * 2, 0, 0, 0, $size, $size);
+		$identicon->paste($corner, new Point(0, 0));
+		$identicon->paste($this->rotate($corner, 90), new Point(0, $size * 2));
+		$identicon->paste($this->rotate($corner, 90), new Point($size * 2, $size * 2));
+		$identicon->paste($this->rotate($corner, 90), new Point($size * 2, 0));
 
 		$side = $this->getSprite($sideSpriteShape, $sideSpriteForegroundColorRed, $sideSpriteForegroundColorGreen, $sideSpriteForegroundColorBlue, $sideSpriteRotation);
-		imagecopy($identicon, $side, $size, 0, 0, 0, $size, $size);
-		$side = imagerotate($side, 90, $backgroundColor);
-		imagecopy($identicon, $side, 0, $size, 0, 0, $size, $size);
-		$side = imagerotate($side, 90, $backgroundColor);
-		imagecopy($identicon, $side, $size, $size * 2, 0, 0, $size, $size);
-		$side = imagerotate($side, 90, $backgroundColor);
-		imagecopy($identicon, $side, $size * 2, $size, 0, 0, $size, $size);
+		$identicon->paste($side, new Point($size, 0));
+		$identicon->paste($this->rotate($side, 90), new Point(0, $size));
+		$identicon->paste($this->rotate($side, 90), new Point($size, $size * 2));
+		$identicon->paste($this->rotate($side, 90), new Point($size * 2, $size));
 
-		/* generate center sprite */
 		$center = $this->getCenter($centerSpriteShape, $cornerSpriteForegroundColorRed, $cornerSpriteForegroundColorGreen, $cornerSpriteForegroundColorBlue, $sideSpriteForegroundColorRed, $sideSpriteForegroundColorGreen, $sideSpriteForegroundColorBlue, $centerSpriteBackground);
-		imagecopy($identicon, $center, $size, $size, 0, 0, $size, $size);
-
-		/* make white transparent */
-		imagecolortransparent($identicon, $backgroundColor);
+		$identicon->paste($center, new Point($size, $size));
 
 		/* create blank image according to specified dimensions */
-		$resized = imagecreatetruecolor($size, $size);
-		imageantialias($resized, TRUE);
+		$identicon = $identicon->resize(new Box($size, $size));
 
-		/* assign white as background */
-		$backgroundColor = imagecolorallocate($resized, 255, 255, 255);
-		imagefilledrectangle($resized, 0, 0, $size, $size, $backgroundColor);
-
-		/* resize identicon according to specification */
-		imagecopyresampled($resized, $identicon, 0, 0, (imagesx($identicon) - $size * 3) / 2, (imagesx($identicon) - $size * 3) / 2, $size, $size, $size * 3, $size * 3);
-
-		/* make white transparent */
-		imagecolortransparent($resized, $backgroundColor);
-
-		return $resized;
+		return $identicon;
 	}
 
 	/**
@@ -99,14 +77,13 @@ class DonParkGenerator extends AbstractGenerator {
 	 * @param int $green
 	 * @param int $blue
 	 * @param float $rotation
-	 * @return resource
+	 * @return \Imagine\Image\ImageInterface
 	 */
 	protected function getSprite($shape, $red, $green, $blue, $rotation) {
-		$sprite = imagecreatetruecolor($this->getSize(), $this->getSize());
-		imageantialias($sprite, TRUE);
-		$foregroundColor = imagecolorallocate($sprite, $red, $green, $blue);
-		$backgroundColor = imagecolorallocate($sprite, 255, 255, 255);
-		imagefilledrectangle($sprite, 0, 0, $this->getSize(), $this->getSize(), $backgroundColor);
+		$foregroundColor = new Color(array($red, $green, $blue));
+		$backgroundColor = new Color(array(255, 255, 255));
+		$sprite          = $this->createImage($this->getSize(), $this->getSize(), $backgroundColor);
+
 		switch ($shape) {
 			case 0: // triangle
 				$shape = array(
@@ -275,14 +252,11 @@ class DonParkGenerator extends AbstractGenerator {
 				);
 				break;
 		}
-		/* apply ratios */
-		for ($i = 0; $i < count($shape); $i++) {
-			$shape[$i] = $shape[$i] * $this->getSize();
-		}
-		imagefilledpolygon($sprite, $shape, count($shape) / 2, $foregroundColor);
+		$sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->getSize()), $foregroundColor, TRUE);
+
 		/* rotate the sprite */
 		for ($i = 0; $i < $rotation; $i++) {
-			$sprite = imagerotate($sprite, 90, $backgroundColor);
+			$sprite = $this->rotate($sprite, 90);
 		}
 
 		return $sprite;
@@ -297,20 +271,18 @@ class DonParkGenerator extends AbstractGenerator {
 	 * @param int $backgroundGreen
 	 * @param int $backgroundBlue
 	 * @param bool $useBackgroundColor
-	 * @return resource
+	 * @return \Imagine\Image\ImageInterface
 	 */
 	protected function getCenter($shape, $foregroundRed, $foregroundGreen, $foregroundBlue, $backgroundRed, $backgroundGreen, $backgroundBlue, $useBackgroundColor = FALSE) {
-		$size   = $this->getSize();
-		$sprite = imagecreatetruecolor($size, $size);
-		imageantialias($sprite, TRUE);
-		$foregroundColor = imagecolorallocate($sprite, $foregroundRed, $foregroundGreen, $foregroundBlue);
 		/* make sure there's enough contrast before we use background color of side sprite */
-		if ($useBackgroundColor === TRUE && (abs($foregroundRed - $backgroundRed) > 127 || abs($foregroundGreen - $backgroundGreen) > 127 || abs($foregroundBlue - $backgroundBlue) > 127)) {
-			$backgroundColor = imagecolorallocate($sprite, $backgroundRed, $backgroundGreen, $backgroundBlue);
+		if ($useBackgroundColor === TRUE) {
+			$backgroundColor = $this->generateBackgroundColorBasedOnContrast($foregroundRed, $foregroundGreen, $foregroundBlue, $backgroundRed, $backgroundGreen, $backgroundBlue);
 		} else {
-			$backgroundColor = imagecolorallocate($sprite, 255, 255, 255);
+			$backgroundColor = $this->backgroundColor;
 		}
-		imagefilledrectangle($sprite, 0, 0, $size, $size, $backgroundColor);
+		$foregroundColor = new Color(array($foregroundRed, $foregroundGreen, $foregroundBlue));
+
+		$sprite = $this->createImage($this->getSize(), $this->getSize(), $backgroundColor);
 		switch ($shape) {
 			case 0: // empty
 				$shape = array();
@@ -407,13 +379,32 @@ class DonParkGenerator extends AbstractGenerator {
 		}
 		/* apply ratios */
 		for ($i = 0; $i < count($shape); $i++) {
-			$shape[$i] = $shape[$i] * $size;
+			$shape[$i] = $shape[$i] * $this->getSize();
 		}
 		if (count($shape) > 0) {
-			imagefilledpolygon($sprite, $shape, count($shape) / 2, $foregroundColor);
+			$sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->getSize()), $foregroundColor, TRUE);
 		}
 
 		return $sprite;
+	}
+
+	/**
+	 * @param int $foregroundRed
+	 * @param int $foregroundGreen
+	 * @param int $foregroundBlue
+	 * @param int $backgroundRed
+	 * @param int $backgroundGreen
+	 * @param int $backgroundBlue
+	 * @return Color
+	 */
+	protected function generateBackgroundColorBasedOnContrast($foregroundRed, $foregroundGreen, $foregroundBlue, $backgroundRed, $backgroundGreen, $backgroundBlue) {
+		if (abs($foregroundRed - $backgroundRed) > 127 || abs($foregroundGreen - $backgroundGreen) > 127 || abs($foregroundBlue - $backgroundBlue) > 127) {
+			$backgroundColor = new Color(array($backgroundRed, $backgroundGreen, $backgroundBlue));
+		} else {
+			$backgroundColor = $this->backgroundColor;
+		}
+
+		return $backgroundColor;
 	}
 }
 

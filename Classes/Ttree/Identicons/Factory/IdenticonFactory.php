@@ -87,9 +87,13 @@ class IdenticonFactory {
 	 * @return Image
 	 */
 	protected function createImageFromService($hash) {
-		$hash = md5($hash);
+		$hash  = md5($hash);
+		$image = $this->identiconGenerator->generate(md5($hash));
 		ob_start();
-		imagepng($this->identiconGenerator->generate(md5($hash)), NULL, 9, PNG_ALL_FILTERS);
+		$image->show('png', array(
+			'quality' => 9,
+			'filter'  => PNG_ALL_FILTERS
+		));
 		$content = ob_get_contents();
 		ob_clean();
 
