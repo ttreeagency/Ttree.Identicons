@@ -1,0 +1,10 @@
+
+-
+  name: 'Generate'
+  uriPattern: '{hash}.png'
+  defaults:
+    '@package':    'Ttree.Identicons'
+    '@controller': 'Identicons'
+    '@action':     'generate'
+    '@format':     'png'
+  httpMethods: ['GET']
