@@ -39,30 +39,26 @@ class DonParkGenerator extends AbstractGenerator {
 		$sideSpriteRotation     = hexdec(substr($hash, 4, 1)) & 3;
 		$centerSpriteBackground = hexdec(substr($hash, 5, 1)) % 2;
 
-		$cornerSpriteForegroundColorRed   = hexdec(substr($hash, 6, 2));
-		$cornerSpriteForegroundColorGreen = hexdec(substr($hash, 8, 2));
-		$cornerSpriteForegroundColorBlue  = hexdec(substr($hash, 10, 2));
+		$cornerSpriteForegroundColor = new Color(array(hexdec(substr($hash, 6, 2)), hexdec(substr($hash, 8, 2)), hexdec(substr($hash, 10, 2))));
 
-		$sideSpriteForegroundColorRed   = hexdec(substr($hash, 12, 2));
-		$sideSpriteForegroundColorGreen = hexdec(substr($hash, 14, 2));
-		$sideSpriteForegroundColorBlue  = hexdec(substr($hash, 16, 2));
+		$sideSpriteForegroundColor = new Color(array(hexdec(substr($hash, 12, 2)), hexdec(substr($hash, 14, 2)), hexdec(substr($hash, 16, 2))));
 
 		$backgroundColor = new Color(array(255, 255, 255));
 		$identicon       = $this->createImage($size * 3, $size * 3, $backgroundColor);
 
-		$corner = $this->getSprite($cornerSpriteShape, $cornerSpriteForegroundColorRed, $cornerSpriteForegroundColorGreen, $cornerSpriteForegroundColorBlue, $cornerSpriteRotation);
+		$corner = $this->getSprite($cornerSpriteShape, $cornerSpriteForegroundColor, $cornerSpriteRotation);
 		$identicon->paste($corner, new Point(0, 0));
 		$identicon->paste($this->rotate($corner, 90), new Point(0, $size * 2));
 		$identicon->paste($this->rotate($corner, 90), new Point($size * 2, $size * 2));
 		$identicon->paste($this->rotate($corner, 90), new Point($size * 2, 0));
 
-		$side = $this->getSprite($sideSpriteShape, $sideSpriteForegroundColorRed, $sideSpriteForegroundColorGreen, $sideSpriteForegroundColorBlue, $sideSpriteRotation);
+		$side = $this->getSprite($sideSpriteShape, $sideSpriteForegroundColor, $sideSpriteRotation);
 		$identicon->paste($side, new Point($size, 0));
 		$identicon->paste($this->rotate($side, 90), new Point(0, $size));
 		$identicon->paste($this->rotate($side, 90), new Point($size, $size * 2));
 		$identicon->paste($this->rotate($side, 90), new Point($size * 2, $size));
 
-		$center = $this->getCenter($centerSpriteShape, $cornerSpriteForegroundColorRed, $cornerSpriteForegroundColorGreen, $cornerSpriteForegroundColorBlue, $sideSpriteForegroundColorRed, $sideSpriteForegroundColorGreen, $sideSpriteForegroundColorBlue, $centerSpriteBackground);
+		$center = $this->getCenter($centerSpriteShape, $cornerSpriteForegroundColor);
 		$identicon->paste($center, new Point($size, $size));
 
 		/* create blank image according to specified dimensions */
@@ -72,17 +68,13 @@ class DonParkGenerator extends AbstractGenerator {
 	}
 
 	/**
-	 * @param int $shape
-	 * @param int $red
-	 * @param int $green
-	 * @param int $blue
-	 * @param float $rotation
+	 * @param $shape
+	 * @param Color $foregroundColor
+	 * @param $rotation
 	 * @return \Imagine\Image\ImageInterface
 	 */
-	protected function getSprite($shape, $red, $green, $blue, $rotation) {
-		$foregroundColor = new Color(array($red, $green, $blue));
-		$backgroundColor = new Color(array(255, 255, 255));
-		$sprite          = $this->createImage($this->getSize(), $this->getSize(), $backgroundColor);
+	protected function getSprite($shape, Color $foregroundColor, $rotation) {
+		$sprite = $this->createImage($this->getSize(), $this->getSize(), $this->backgroundColor);
 
 		switch ($shape) {
 			case 0: // triangle
@@ -263,24 +255,18 @@ class DonParkGenerator extends AbstractGenerator {
 	}
 
 	/**
-	 * @param int $shape
-	 * @param int $foregroundRed
-	 * @param int $foregroundGreen
-	 * @param int $foregroundBlue
-	 * @param int $backgroundRed
-	 * @param int $backgroundGreen
-	 * @param int $backgroundBlue
-	 * @param bool $useBackgroundColor
+	 * @param $shape
+	 * @param Color $foregroundColor
+	 * @param Color $backgroundColor
 	 * @return \Imagine\Image\ImageInterface
 	 */
-	protected function getCenter($shape, $foregroundRed, $foregroundGreen, $foregroundBlue, $backgroundRed, $backgroundGreen, $backgroundBlue, $useBackgroundColor = FALSE) {
+	protected function getCenter($shape, Color $foregroundColor, Color $backgroundColor = NULL) {
 		/* make sure there's enough contrast before we use background color of side sprite */
-		if ($useBackgroundColor === TRUE) {
-			$backgroundColor = $this->generateBackgroundColorBasedOnContrast($foregroundRed, $foregroundGreen, $foregroundBlue, $backgroundRed, $backgroundGreen, $backgroundBlue);
+		if ($backgroundColor !== NULL) {
+			$backgroundColor = $this->generateBackgroundColorBasedOnContrast($foregroundColor, $backgroundColor);
 		} else {
 			$backgroundColor = $this->backgroundColor;
 		}
-		$foregroundColor = new Color(array($foregroundRed, $foregroundGreen, $foregroundBlue));
 
 		$sprite = $this->createImage($this->getSize(), $this->getSize(), $backgroundColor);
 		switch ($shape) {
@@ -389,18 +375,12 @@ class DonParkGenerator extends AbstractGenerator {
 	}
 
 	/**
-	 * @param int $foregroundRed
-	 * @param int $foregroundGreen
-	 * @param int $foregroundBlue
-	 * @param int $backgroundRed
-	 * @param int $backgroundGreen
-	 * @param int $backgroundBlue
+	 * @param Color $foregroundColor
+	 * @param Color $backgroundColor
 	 * @return Color
 	 */
-	protected function generateBackgroundColorBasedOnContrast($foregroundRed, $foregroundGreen, $foregroundBlue, $backgroundRed, $backgroundGreen, $backgroundBlue) {
-		if (abs($foregroundRed - $backgroundRed) > 127 || abs($foregroundGreen - $backgroundGreen) > 127 || abs($foregroundBlue - $backgroundBlue) > 127) {
-			$backgroundColor = new Color(array($backgroundRed, $backgroundGreen, $backgroundBlue));
-		} else {
+	protected function generateBackgroundColorBasedOnContrast(Color $foregroundColor, Color $backgroundColor) {
+		if (!(abs($foregroundColor->getRed() - $backgroundColor->getRed()) > 127 || abs($foregroundColor->getGreen() - $backgroundColor->getGreen()) > 127 || abs($foregroundColor->getBlue() - $backgroundColor->getBlue()) > 127)) {
 			$backgroundColor = $this->backgroundColor;
 		}
 
