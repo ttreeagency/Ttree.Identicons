@@ -12,7 +12,9 @@ namespace Ttree\Identicons\Generator;
  *                                                                        */
 
 use Imagine\Filter\Basic\Rotate;
+use Imagine\Image\Box;
 use Imagine\Image\Color;
+use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Utility\Arrays;
@@ -110,6 +112,18 @@ abstract class AbstractGenerator implements GeneratorInterface {
 		}
 
 		return $coordinates;
+	}
+
+	/**
+	 * @param ImageInterface $image
+	 * @param int $padding
+	 * @return \Imagine\Image\ManipulatorInterface
+	 */
+	protected function pad(ImageInterface $image, $padding) {
+		$size    = $image->getSize();
+		$resized = $this->createImage($size->getWidth() + $padding, $size->getHeight() + $padding);
+
+		return $resized->paste($image, new Point($padding / 2, $padding / 2))->resize(new Box($this->getSize(), $this->getSize()));
 	}
 }
 

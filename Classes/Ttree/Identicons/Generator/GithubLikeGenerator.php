@@ -14,6 +14,7 @@ namespace Ttree\Identicons\Generator;
 use Imagine\Filter\Basic\FlipHorizontally;
 use Imagine\Image\Box;
 use Imagine\Image\Color;
+use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
 use TYPO3\Flow\Annotations as Flow;
 
@@ -74,7 +75,7 @@ class GithubLikeGenerator extends AbstractGenerator {
 		$resized = $this->createImage($size->getWidth() + $padding, $size->getHeight() + $padding);
 		$resized->paste($identicon, new Point($padding / 2, $padding / 2))->resize(new Box($this->getSize(), $this->getSize()));
 
-		return $resized;
+		return $this->pad($identicon, $this->getSize() / 2);
 	}
 
 	/**

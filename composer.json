@@ -2,10 +2,11 @@
     "name": "ttree/identicons",
     "type": "typo3-flow-package",
     "description": "Flow package to generate identicons",
-    "version": "1.0",
+    "version": "1.0.0",
     "license": "MIT",
     "require": {
-        "typo3/flow": "*"
+        "typo3/flow": "*",
+        "typo3/media": "*"
     },
     "autoload": {
         "psr-0": {
