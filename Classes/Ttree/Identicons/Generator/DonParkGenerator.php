@@ -64,7 +64,7 @@ class DonParkGenerator extends AbstractGenerator {
 		/* create blank image according to specified dimensions */
 		$identicon = $identicon->resize(new Box($size, $size));
 
-		return $identicon;
+		return $this->pad($identicon, $this->getSize() / 4);
 	}
 
 	/**
