@@ -38,7 +38,7 @@ class GithubLikeGenerator extends AbstractGenerator {
 
 		$topCornerSpriteShape    = hexdec(substr($hash, 0, 1));
 		$bottomCornerSpriteShape = hexdec(substr($hash, 1, 1));
-		$topSideSpriteShape      = hexdec(substr($hash, 2, 1)) & 2;
+		$topMiddleSpriteShape      = hexdec(substr($hash, 2, 1)) & 2;
 		$middleSideSpriteShape   = hexdec(substr($hash, 3, 1)) & 2;
 		$centerSpriteShape       = hexdec(substr($hash, 4, 1)) & 2;
 		$bottomSpriteShape       = hexdec(substr($hash, 5, 1)) & 7;
@@ -49,26 +49,26 @@ class GithubLikeGenerator extends AbstractGenerator {
 
 		$flipFilter = new FlipHorizontally();
 
-		$topCorner = $this->getSquareSprite($topCornerSpriteShape);
-		$identicon->paste($topCorner, new Point(0, 0));
-		$identicon->paste($flipFilter->apply($topCorner), new Point($size * 1.5, 0));
+		$topCornerSprite = $this->getSquareSprite($topCornerSpriteShape);
+		$identicon->paste($topCornerSprite, new Point(0, 0));
+		$identicon->paste($flipFilter->apply($topCornerSprite), new Point($size * 1.5, 0));
 
-		$bottomCorner = $this->getSquareSprite($bottomCornerSpriteShape);
-		$identicon->paste($bottomCorner, new Point(0, $size * 1.5));
-		$identicon->paste($flipFilter->apply($bottomCorner), new Point($size * 1.5, $size * 1.5));
+		$bottomCornerSprite = $this->getSquareSprite($bottomCornerSpriteShape);
+		$identicon->paste($bottomCornerSprite, new Point(0, $size * 1.5));
+		$identicon->paste($flipFilter->apply($bottomCornerSprite), new Point($size * 1.5, $size * 1.5));
 
-		$topSide = $this->getRectangularSprite($topSideSpriteShape, 90);
-		$identicon->paste($topSide, new Point($size, 0));
+		$topMiddleSprite = $this->getRectangularSprite($topMiddleSpriteShape, 90);
+		$identicon->paste($topMiddleSprite, new Point($size, 0));
 
-		$leftMiddleSide = $this->getRectangularSprite($middleSideSpriteShape, 0);
-		$identicon->paste($leftMiddleSide, new Point(0, $size));
-		$identicon->paste($flipFilter->apply($leftMiddleSide), new Point($size * 1.5, $size));
+		$leftMiddleSideSprite = $this->getRectangularSprite($middleSideSpriteShape, 0);
+		$identicon->paste($leftMiddleSideSprite, new Point(0, $size));
+		$identicon->paste($flipFilter->apply($leftMiddleSideSprite), new Point($size * 1.5, $size));
 
-		$bottomSide = $this->getRectangularSprite($bottomSpriteShape, 90);
-		$identicon->paste($bottomSide, new Point($size, $size * 1.5));
+		$bottomSideSprite = $this->getRectangularSprite($bottomSpriteShape, 90);
+		$identicon->paste($bottomSideSprite, new Point($size, $size * 1.5));
 
-		$center = $this->getCenter($centerSpriteShape);
-		$identicon->paste($center, new Point($size, $size));
+		$centerSprite = $this->getCenter($centerSpriteShape);
+		$identicon->paste($centerSprite, new Point($size, $size));
 
 		$size    = $identicon->getSize();
 		$padding = $this->getSize() / 2;
@@ -229,7 +229,7 @@ class GithubLikeGenerator extends AbstractGenerator {
 			case 2:
 				$shape = array(
 					1,
-					0
+					1
 				);
 				break;
 			case 3:
@@ -241,7 +241,7 @@ class GithubLikeGenerator extends AbstractGenerator {
 			case 4:
 				$shape = array(
 					1,
-					1
+					0
 				);
 				break;
 			default:
