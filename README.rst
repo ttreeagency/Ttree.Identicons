@@ -25,19 +25,39 @@ Installation
 
 3. Go to www.yourdomain/i/[yourhash].png (replace [yourhash] by any string)
 
+=================
+Fluid ViewHelpers
+=================
+
+You can insert an identicon in your Fluid template by using the provided ImageViewHelper.
+
+::
+
+	{namespace identicon=Ttree\Identicons\ViewHelpers}
+	<identicon:image hash="ttree" alt="ttree -- identicon" size="42" class="img-polaroid" />
+
+If the identicon doesn't exist for the provided hash, it will be created and persisted automatically.
+
 ====
 Tips
 ====
 
 You can write your own generator, your implement the GeneratorInterface and change the default implementation in
-your Objects.yaml (check the Objects.yaml from this package for the synthax)
+your Objects.yaml (check the Objects.yaml from this package for the synthax).
+
+**Warning**: if you change the Generator, currently you need to truncate the table "ttree_identicons_domain_model_identicon"
+manually. This will change in a future release.
 
 ==================
 Identicons Samples
 ==================
 
-.. image:: Documentation/Sample/dfeyer-donpark.png
+.. figure:: Documentation/Sample/dfeyer-donpark.png
 	:alt: Don Park
 
-.. image:: Documentation/Sample/dfeyer-githubstyle.png
+	the Don Park style identicon for "dfeyer"
+
+.. figure:: Documentation/Sample/ttree-githubstyle.png
 	:alt: Github Style
+
+	the Github style identicon for "ttree"
