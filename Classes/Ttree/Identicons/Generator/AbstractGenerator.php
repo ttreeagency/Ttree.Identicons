@@ -27,9 +27,10 @@ use TYPO3\Flow\Utility\Arrays;
 abstract class AbstractGenerator implements GeneratorInterface {
 
 	/**
-	 * @var array
+	 * @var \Ttree\Identicons\Service\SettingsService
+	 * @Flow\Inject
 	 */
-	protected $settings;
+	protected $settingsService;
 
 	/**
 	 * @var \Imagine\Imagick\Imagine
@@ -48,25 +49,18 @@ abstract class AbstractGenerator implements GeneratorInterface {
 	protected $backgroundColor;
 
 	/**
-	 * @param array $settings
-	 */
-	public function injectSettings(array $settings) {
-		$this->settings = $settings;
-	}
-
-	/**
 	 * Initialize Object
 	 */
 	public function initializeObject() {
 		$this->imagine         = $this->imagineFactory->create();
-		$this->backgroundColor = new \Imagine\Image\Color($this->settings['backgroundColor']);
+		$this->backgroundColor = new \Imagine\Image\Color($this->settingsService->get('backgroundColor'));
 	}
 
 	/**
 	 * @return int
 	 */
 	protected function getSize() {
-		return Arrays::getValueByPath($this->settings, 'size') ? : 128;
+		return $this->settingsService->get('size') ? : 128;
 	}
 
 	/**

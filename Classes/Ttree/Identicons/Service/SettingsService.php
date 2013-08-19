@@ -1,5 +1,5 @@
 <?php
-namespace Ttree\Identicons\Controller;
+namespace Ttree\Identicons\Service;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "Ttree.Identicons".      *
@@ -12,38 +12,32 @@ namespace Ttree\Identicons\Controller;
  *                                                                        */
 
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Utility\Arrays;
 
 /**
- * Identicon Controller
- *
- * @package Ttree\Identicons\Controller
+ * @Flow\Scope("singleton")
  */
-class IdenticonsController extends \TYPO3\Flow\Mvc\Controller\ActionController {
+class SettingsService {
 
 	/**
-	 * @var \Ttree\Identicons\Factory\IdenticonFactory
-	 * @Flow\Inject
+	 * @var array
 	 */
-	protected $identiconFactory;
+	protected $settings;
 
 	/**
-	 * @var \Ttree\Identicons\Service\SettingsService
-	 * @Flow\Inject
+	 * @param array $settings
 	 */
-	protected $settingsService;
+	public function injectSettings(array $settings) {
+		$this->settings = $settings;
+	}
 
 	/**
-	 * @param string $hash
-	 * @return string
+	 * @param string $path
+	 * @return string|array|boolean
 	 */
-	public function generateAction($hash) {
-		$this->response->setHeader('Content-Type', 'image/png');
-		$this->response->setHeader('Cache-Control', $this->settingsService->get('cacheControl'));
-		$identicon = $this->identiconFactory->create($hash);
-
-		return $identicon->render();
+	public function get($path) {
+		return Arrays::getValueByPath($this->settings, $path);
 	}
 
 }
-
 ?>

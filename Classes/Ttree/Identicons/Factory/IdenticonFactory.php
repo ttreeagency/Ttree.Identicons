@@ -54,16 +54,10 @@ class IdenticonFactory {
 	protected $persistenceManager;
 
 	/**
-	 * @var array
+	 * @var \Ttree\Identicons\Service\SettingsService
+	 * @Flow\Inject
 	 */
-	protected $settings;
-
-	/**
-	 * @param array $settings
-	 */
-	public function injectSettings(array $settings) {
-		$this->settings = $settings;
-	}
+	protected $settingsService;
 
 	/**
 	 * @param string $hash
@@ -73,7 +67,7 @@ class IdenticonFactory {
 		$identicon = $this->identiconRepository->findByIdentifier($hash);
 		if ($identicon === NULL) {
 			$identicon = new Identicon($this->createImageFromService($hash), $hash);
-			if ($this->settings['persist'] === TRUE) {
+			if ($this->settingsService->get('persist') === TRUE) {
 				$this->identiconRepository->add($identicon);
 			}
 			$this->persistenceManager->persistAll();
