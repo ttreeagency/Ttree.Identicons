@@ -37,11 +37,11 @@ class DonParkGenerator extends AbstractGenerator {
 
 		$cornerSpriteRotation   = hexdec(substr($hash, 3, 1)) & 3;
 		$sideSpriteRotation     = hexdec(substr($hash, 4, 1)) & 3;
-		$centerSpriteBackground = hexdec(substr($hash, 5, 1)) % 2;
 
 		$cornerSpriteForegroundColor = new Color(array(hexdec(substr($hash, 6, 2)), hexdec(substr($hash, 8, 2)), hexdec(substr($hash, 10, 2))));
-
 		$sideSpriteForegroundColor = new Color(array(hexdec(substr($hash, 12, 2)), hexdec(substr($hash, 14, 2)), hexdec(substr($hash, 16, 2))));
+		$centerSpriteForegroundColor = new Color(array(hexdec(substr($hash, 18, 2)), hexdec(substr($hash, 20, 2)), hexdec(substr($hash, 22, 2))));
+		$centerSpriteBackgroundColor = new Color(array(hexdec(substr($hash, 24, 2)), hexdec(substr($hash, 26, 2)), hexdec(substr($hash, 28, 2))));
 
 		$backgroundColor = new Color(array(255, 255, 255));
 		$identicon       = $this->createImage($size * 3, $size * 3, $backgroundColor);
@@ -58,7 +58,7 @@ class DonParkGenerator extends AbstractGenerator {
 		$identicon->paste($this->rotate($side, 90), new Point($size, $size * 2));
 		$identicon->paste($this->rotate($side, 90), new Point($size * 2, $size));
 
-		$center = $this->getCenter($centerSpriteShape, $cornerSpriteForegroundColor);
+		$center = $this->getCenter($centerSpriteShape, $centerSpriteForegroundColor, $centerSpriteBackgroundColor);
 		$identicon->paste($center, new Point($size, $size));
 
 		/* create blank image according to specified dimensions */
@@ -363,7 +363,6 @@ class DonParkGenerator extends AbstractGenerator {
 				);
 				break;
 		}
-		/* apply ratios */
 		for ($i = 0; $i < count($shape); $i++) {
 			$shape[$i] = $shape[$i] * $this->getSize();
 		}
