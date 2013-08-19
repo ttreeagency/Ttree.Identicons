@@ -3,4 +3,4 @@ Ttree:
     persist: TRUE
     size: 420
     backgroundColor: '#EEE'
-    cacheControl: 'max-age=2592000, public'
+    ttl: 'max-age=2592000, public'

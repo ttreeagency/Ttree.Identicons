@@ -37,8 +37,12 @@ class IdenticonsController extends \TYPO3\Flow\Mvc\Controller\ActionController {
 	 * @return string
 	 */
 	public function generateAction($hash) {
+		$ttl = $this->settingsService->getCacheControlMaxAge();
+
 		$this->response->setHeader('Content-Type', 'image/png');
-		$this->response->setHeader('Cache-Control', $this->settingsService->get('cacheControl'));
+		$this->response->setHeader('Cache-Control', sprintf('max-age=%i, public', $ttl));
+		$this->response->setHeader('Expires', date(DATE_RFC1123,time()+$ttl));
+
 		$identicon = $this->identiconFactory->create($hash);
 
 		return $identicon->render();

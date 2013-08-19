@@ -39,5 +39,12 @@ class SettingsService {
 		return Arrays::getValueByPath($this->settings, $path);
 	}
 
+	/**
+	 * @return integer
+	 */
+	public function getCacheControlMaxAge() {
+		return (int)$this->get('ttl') ?: 2592000;
+	}
+
 }
 ?>
