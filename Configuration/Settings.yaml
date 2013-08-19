@@ -14,6 +14,8 @@ Ttree:
     size: 420
     backgroundColor: '#EEE'
     ttl: 2592000
+    access:
+      enable: FALSE
     flood:
       enable: TRUE
       limit: 5

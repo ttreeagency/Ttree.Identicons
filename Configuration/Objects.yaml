@@ -12,3 +12,7 @@ Ttree\Identicons\Generator\GeneratorInterface:
   className: Ttree\Identicons\Generator\GithubLikeGenerator
   # className: Ttree\Identicons\Generator\DonParkGenerator
   scope: singleton
+
+Ttree\Identicons\Security\AccessValidationInterface:
+  className: Ttree\Identicons\Security\DummyAccessValidation
+  scope: singleton

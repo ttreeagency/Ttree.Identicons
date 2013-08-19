@@ -57,6 +57,17 @@ framework to store request rate statistics, please change the default FileBacken
 a production use.
 
 =================
+Access Limitation
+=================
+
+By default this package will generate an identicons for any hash, if you need to limit this,
+per ex. you need to generate identicon only for existing Party, you can implement the interface
+AccessValidationInterface and enable access validation in the settings.
+
+You also need to change the default implementation for this interface in your Objects.yaml
+(check the Objects.yaml from this package for the syntax).
+
+=================
 Fluid ViewHelpers
 =================
 
@@ -74,7 +85,7 @@ Tips
 ====
 
 You can write your own generator, just implement the GeneratorInterface and change the default implementation in
-your Objects.yaml (check the Objects.yaml from this package for the synthax).
+your Objects.yaml (check the Objects.yaml from this package for the syntax).
 
 **Warning**: if you change the Generator, currently you need to truncate the table "ttree_identicons_domain_model_identicon"
 manually. This will change in a future release.
