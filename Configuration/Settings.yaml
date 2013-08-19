@@ -13,7 +13,7 @@ Ttree:
     persist: TRUE
     size: 420
     backgroundColor: '#EEE'
-    ttl: 'max-age=2592000, public'
+    ttl: 2592000
     flood:
       enable: TRUE
       limit: 5
