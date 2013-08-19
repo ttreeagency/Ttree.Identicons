@@ -22,6 +22,7 @@ use TYPO3\Flow\Annotations as Flow;
  * Original Don Park identicon generator
  *
  * @package Ttree\Identicons\Generator
+ * @Flow\Scope("singleton")
  */
 class GithubLikeGenerator extends AbstractGenerator {
 
