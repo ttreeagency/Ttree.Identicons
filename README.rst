@@ -12,7 +12,7 @@ Installation
 
 1. Just install and activate the package
 
-2. Include the package subroutes in your main Routes.yaml
+2. Include the package subroutes in your main Routes.yaml (optional: if you use only the fluid ViewHelper)
 
 ::
 
@@ -46,6 +46,8 @@ Settings
 +--------------------+----------------------------------------+-------------------------+
 | flood.limit        | Maximum number of request per minute   | 5                       |
 +--------------------+----------------------------------------+-------------------------+
+| access.enable      | Enable advanced access limitation      | FALSE                   |
++--------------------+----------------------------------------+-------------------------+
 
 ================
 Flood Mitigation
@@ -56,9 +58,14 @@ requests. You can change this in Settings.yaml. The flood mitigation use the cac
 framework to store request rate statistics, please change the default FileBackend for
 a production use.
 
-=================
-Access Limitation
-=================
+**Important**: When an IP address is blocked, for a maximum of 1 minute, the Application Firewall
+block the request early in the Flow bootstrap (when a request arrive at the MVC dispatcher).
+If you don't use the default URL www.domain/i/hash.png, you need to change the patternValue
+in Settings.yaml, in the TYPO3.Flow firewall section.
+
+==========================
+Advanced access limitation
+==========================
 
 By default this package will generate an identicons for any hash, if you need to limit this,
 per ex. you need to generate identicon only for existing Party, you can implement the interface
@@ -79,6 +86,9 @@ You can insert an identicon in your Fluid template by using the provided ImageVi
 	<identicon:image hash="ttree" alt="ttree -- identicon" size="42" class="img-polaroid" />
 
 If the identicon doesn't exist for the provided hash, it will be created and persisted automatically.
+
+**Warning**: Advanced Access Limitation and Flood Mitigation are not supported by the Fluid ViewHelper,
+you need to take care of your server by yourself.
 
 ====
 Tips
