@@ -25,6 +25,25 @@ Installation
 
 3. Go to www.yourdomain/i/[yourhash].png (replace [yourhash] by any string)
 
+This package is available on Packagist.org: https://packagist.org/packages/ttree/identicons
+
+========
+Settings
+========
+
++--------------------+----------------------------------------+-------------------------+
+| Setting            | Description                            | Default Value           |
++====================+========================================+=========================+
+| persist            | Enable persistance                     | TRUE                    |
++--------------------+----------------------------------------+-------------------------+
+| size               | Default size (h/w) of the square icon  | 420                     |
++--------------------+----------------------------------------+-------------------------+
+| backgroundColor    | Default background color               | #EEE                    |
++--------------------+----------------------------------------+-------------------------+
+| cacheControl       | Default Cache Control header           | max-age=2592000, public |
++--------------------+----------------------------------------+-------------------------+
+
+
 =================
 Fluid ViewHelpers
 =================
@@ -42,7 +61,7 @@ If the identicon doesn't exist for the provided hash, it will be created and per
 Tips
 ====
 
-You can write your own generator, your implement the GeneratorInterface and change the default implementation in
+You can write your own generator, just implement the GeneratorInterface and change the default implementation in
 your Objects.yaml (check the Objects.yaml from this package for the synthax).
 
 **Warning**: if you change the Generator, currently you need to truncate the table "ttree_identicons_domain_model_identicon"
