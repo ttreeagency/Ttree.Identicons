@@ -57,13 +57,6 @@ abstract class AbstractGenerator implements GeneratorInterface {
 	}
 
 	/**
-	 * @return int
-	 */
-	protected function getSize() {
-		return $this->settingsService->get('size') ? : 128;
-	}
-
-	/**
 	 * @param int $width
 	 * @param int $height
 	 * @param \Imagine\Image\Color $backgroundColor
@@ -100,7 +93,7 @@ abstract class AbstractGenerator implements GeneratorInterface {
 		}
 		$coordinates = array();
 		for ($i = 0; $i < $count / 2; $i++) {
-			//$shape[$i] = $shape[$i] * $this->getSize();
+			//$shape[$i] = $shape[$i] * $this->settingsService->getDefaultIconSize();
 			$coordinate    = array_slice($shape, $i * 2, 2);
 			$coordinates[] = new Point($coordinate[0] * $size, $coordinate[1] * $size);
 		}
@@ -117,7 +110,7 @@ abstract class AbstractGenerator implements GeneratorInterface {
 		$size    = $image->getSize();
 		$resized = $this->createImage($size->getWidth() + $padding, $size->getHeight() + $padding);
 
-		return $resized->paste($image, new Point($padding / 2, $padding / 2))->resize(new Box($this->getSize(), $this->getSize()));
+		return $resized->paste($image, new Point($padding / 2, $padding / 2))->resize(new Box($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize()));
 	}
 }
 

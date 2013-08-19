@@ -34,7 +34,7 @@ class GithubLikeGenerator extends AbstractGenerator {
 	 * {@inheritdoc}
 	 */
 	public function generate($hash, $size = NULL) {
-		$size = $size ? : $this->getSize();
+		$size = $size ? : $this->settingsService->getDefaultIconSize();
 
 		$topCornerSpriteShape    = hexdec(substr($hash, 0, 1));
 		$bottomCornerSpriteShape = hexdec(substr($hash, 1, 1));
@@ -71,11 +71,11 @@ class GithubLikeGenerator extends AbstractGenerator {
 		$identicon->paste($centerSprite, new Point($size, $size));
 
 		$size    = $identicon->getSize();
-		$padding = $this->getSize() / 2;
+		$padding = $this->settingsService->getDefaultIconSize() / 2;
 		$resized = $this->createImage($size->getWidth() + $padding, $size->getHeight() + $padding);
-		$resized->paste($identicon, new Point($padding / 2, $padding / 2))->resize(new Box($this->getSize(), $this->getSize()));
+		$resized->paste($identicon, new Point($padding / 2, $padding / 2))->resize(new Box($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize()));
 
-		return $this->pad($identicon, $this->getSize() / 2);
+		return $this->pad($identicon, $this->settingsService->getDefaultIconSize() / 2);
 	}
 
 	/**
@@ -97,7 +97,7 @@ class GithubLikeGenerator extends AbstractGenerator {
 	 * @throws \Exception
 	 */
 	protected function getSquareSprite($shape, $rotation = NULL) {
-		$sprite = $this->createImage($this->getSize(), $this->getSize());
+		$sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize());
 		switch ($shape) {
 			case 1:
 				$shape = array(
@@ -179,7 +179,7 @@ class GithubLikeGenerator extends AbstractGenerator {
 				break;
 		}
 		$size   = $sprite->getSize();
-		$square = $this->createImage(0.5 * $this->getSize(), 0.5 * $this->getSize(), $this->foregroundColor);
+		$square = $this->createImage(0.5 * $this->settingsService->getDefaultIconSize(), 0.5 * $this->settingsService->getDefaultIconSize(), $this->foregroundColor);
 		for ($i = 0; $i < count($shape); $i++) {
 			if ($shape[$i] === 0) {
 				continue;
@@ -217,7 +217,7 @@ class GithubLikeGenerator extends AbstractGenerator {
 	 * @throws \Exception
 	 */
 	protected function getRectangularSprite($shape, $rotation = NULL) {
-		$sprite = $this->createImage($this->getSize(), $this->getSize() / 2);
+		$sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize() / 2);
 
 		switch ($shape) {
 			case 1:
@@ -253,7 +253,7 @@ class GithubLikeGenerator extends AbstractGenerator {
 		}
 
 		$size   = $sprite->getSize();
-		$square = $this->createImage(0.5 * $this->getSize(), 0.5 * $this->getSize(), $this->foregroundColor);
+		$square = $this->createImage(0.5 * $this->settingsService->getDefaultIconSize(), 0.5 * $this->settingsService->getDefaultIconSize(), $this->foregroundColor);
 		for ($i = 0; $i < count($shape); $i++) {
 			if ($shape[$i] === 0) {
 				continue;
@@ -294,7 +294,7 @@ class GithubLikeGenerator extends AbstractGenerator {
 				$color = $this->backgroundColor;
 				break;
 		}
-		return $this->createImage($this->getSize() / 2, $this->getSize() / 2, $color);
+		return $this->createImage($this->settingsService->getDefaultIconSize() / 2, $this->settingsService->getDefaultIconSize() / 2, $color);
 	}
 }
 

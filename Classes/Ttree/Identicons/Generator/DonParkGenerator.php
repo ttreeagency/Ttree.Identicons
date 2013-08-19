@@ -29,7 +29,7 @@ class DonParkGenerator extends AbstractGenerator {
 	 * @return resource
 	 */
 	public function generate($hash, $size = NULL) {
-		$size = $size ? : $this->getSize();
+		$size = $size ? : $this->settingsService->getDefaultIconSize();
 
 		$cornerSpriteShape = hexdec(substr($hash, 0, 1));
 		$sideSpriteShape   = hexdec(substr($hash, 1, 1));
@@ -64,7 +64,7 @@ class DonParkGenerator extends AbstractGenerator {
 		/* create blank image according to specified dimensions */
 		$identicon = $identicon->resize(new Box($size, $size));
 
-		return $this->pad($identicon, $this->getSize() / 4);
+		return $this->pad($identicon, $this->settingsService->getDefaultIconSize() / 4);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class DonParkGenerator extends AbstractGenerator {
 	 * @return \Imagine\Image\ImageInterface
 	 */
 	protected function getSprite($shape, Color $foregroundColor, $rotation) {
-		$sprite = $this->createImage($this->getSize(), $this->getSize(), $this->backgroundColor);
+		$sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize(), $this->backgroundColor);
 
 		switch ($shape) {
 			case 0: // triangle
@@ -244,7 +244,7 @@ class DonParkGenerator extends AbstractGenerator {
 				);
 				break;
 		}
-		$sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->getSize()), $foregroundColor, TRUE);
+		$sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->settingsService->getDefaultIconSize()), $foregroundColor, TRUE);
 
 		/* rotate the sprite */
 		for ($i = 0; $i < $rotation; $i++) {
@@ -268,7 +268,7 @@ class DonParkGenerator extends AbstractGenerator {
 			$backgroundColor = $this->backgroundColor;
 		}
 
-		$sprite = $this->createImage($this->getSize(), $this->getSize(), $backgroundColor);
+		$sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize(), $backgroundColor);
 		switch ($shape) {
 			case 0: // empty
 				$shape = array();
@@ -364,10 +364,10 @@ class DonParkGenerator extends AbstractGenerator {
 				break;
 		}
 		for ($i = 0; $i < count($shape); $i++) {
-			$shape[$i] = $shape[$i] * $this->getSize();
+			$shape[$i] = $shape[$i] * $this->settingsService->getDefaultIconSize();
 		}
 		if (count($shape) > 0) {
-			$sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->getSize()), $foregroundColor, TRUE);
+			$sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->settingsService->getDefaultIconSize()), $foregroundColor, TRUE);
 		}
 
 		return $sprite;

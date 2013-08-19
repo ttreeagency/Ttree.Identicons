@@ -46,5 +46,12 @@ class SettingsService {
 		return (int)$this->get('ttl') ?: 2592000;
 	}
 
+	/**
+	 * @return integer
+	 */
+	public function getDefaultIconSize() {
+		return (int)$this->get('size') ? : 420;
+	}
+
 }
 ?>
