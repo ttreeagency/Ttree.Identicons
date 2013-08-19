@@ -42,7 +42,19 @@ Settings
 +--------------------+----------------------------------------+-------------------------+
 | ttl                | HTTP Cache header TTL in seconds       | 2592000                 |
 +--------------------+----------------------------------------+-------------------------+
+| flood.enable       | Activate Flood mitigation              | TRUE                    |
++--------------------+----------------------------------------+-------------------------+
+| flood.limit        | Maximum number of request per minute   | 5                       |
++--------------------+----------------------------------------+-------------------------+
 
+================
+Flood Mitigation
+================
+
+By default this package limit the request rate per minute (for a single IP address) to 5
+requests. You can change this in Settings.yaml. The flood mitigation use the caching
+framework to store request rate statistics, please change the default FileBackend for
+a production use.
 
 =================
 Fluid ViewHelpers

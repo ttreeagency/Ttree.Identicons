@@ -1,3 +1,13 @@
+Ttree\Identicons\Service\FloodMitigationService:
+  properties:
+    cache:
+      object:
+        factoryObjectName: TYPO3\Flow\Cache\CacheManager
+        factoryMethodName: getCache
+        arguments:
+          1:
+            value: TtreeIdenticons_FloodMitigation
+
 Ttree\Identicons\Generator\GeneratorInterface:
   className: Ttree\Identicons\Generator\GithubLikeGenerator
   # className: Ttree\Identicons\Generator\DonParkGenerator

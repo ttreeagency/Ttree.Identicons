@@ -1,6 +1,19 @@
+TYPO3:
+  Flow:
+    security:
+      firewall:
+        filters:
+          -
+            patternType:  'URI'
+            patternValue: '/i/.*'
+            interceptor:  'Ttree\Identicons\Authorization\Interceptor\FloodMitigation'
+
 Ttree:
   Identicons:
     persist: TRUE
     size: 420
     backgroundColor: '#EEE'
     ttl: 'max-age=2592000, public'
+    flood:
+      enable: TRUE
+      limit: 5
