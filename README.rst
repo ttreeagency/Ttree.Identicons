@@ -44,7 +44,7 @@ Settings
 +--------------------+----------------------------------------+-------------------------+
 | flood.enable       | Activate Flood mitigation              | TRUE                    |
 +--------------------+----------------------------------------+-------------------------+
-| flood.limit        | Maximum number of request per minute   | 5                       |
+| flood.limit        | Maximum number of request per minute   | 30                      |
 +--------------------+----------------------------------------+-------------------------+
 | access.enable      | Enable advanced access limitation      | FALSE                   |
 +--------------------+----------------------------------------+-------------------------+
@@ -53,7 +53,7 @@ Settings
 Flood Mitigation
 ================
 
-By default this package limit the request rate per minute (for a single IP address) to 5
+By default this package limit the request rate per minute (for a single IP address) to 30
 requests. You can change this in Settings.yaml. The flood mitigation use the caching
 framework to store request rate statistics, please change the default FileBackend for
 a production use.

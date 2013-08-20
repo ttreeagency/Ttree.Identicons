@@ -18,4 +18,4 @@ Ttree:
       enable: FALSE
     flood:
       enable: TRUE
-      limit: 5
+      limit: 30
