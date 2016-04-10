@@ -11,23 +11,24 @@ namespace Ttree\Identicons\Controller;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Ttree\Identicons\Factory\IdenticonFactory;
+use Ttree\Identicons\Service\SettingsService;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Mvc\Controller\ActionController;
 
 /**
  * Identicon Controller
- *
- * @package Ttree\Identicons\Controller
  */
-class IdenticonsController extends \TYPO3\Flow\Mvc\Controller\ActionController
+class IdenticonsController extends ActionController
 {
     /**
-     * @var \Ttree\Identicons\Factory\IdenticonFactory
+     * @var IdenticonFactory
      * @Flow\Inject
      */
     protected $identiconFactory;
 
     /**
-     * @var \Ttree\Identicons\Service\SettingsService
+     * @var SettingsService
      * @Flow\Inject
      */
     protected $settingsService;
