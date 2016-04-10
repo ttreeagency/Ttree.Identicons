@@ -11,8 +11,9 @@ namespace Ttree\Identicons\Domain\Model;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
-use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
+use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Media\Domain\Model\Image;
 
 /**
  * Identicon Entity
@@ -28,16 +29,16 @@ class Identicon
     protected $token;
 
     /**
-     * @var \TYPO3\Media\Domain\Model\Image
+     * @var Image
      * @ORM\OneToOne(cascade={"persist"})
      */
     protected $image;
 
     /**
-     * @param \TYPO3\Media\Domain\Model\Image $image
+     * @param Image $image
      * @param string $token
      */
-    public function __construct(\TYPO3\Media\Domain\Model\Image $image, $token)
+    public function __construct(Image $image, $token)
     {
         $this->image = $image;
         $this->token = $token;
@@ -58,7 +59,7 @@ class Identicon
     {
         $content = '';
         if ($this->getImage() !== null && $this->getImage()->getResource() !== null) {
-            $handle  = fopen($this->getImage()->getResource()->getUri(), 'rb');
+            $handle = fopen($this->getImage()->getResource()->createTemporaryLocalCopy(), 'rb');
             $content = stream_get_contents($handle);
             fclose($handle);
         }
@@ -67,7 +68,7 @@ class Identicon
     }
 
     /**
-     * @return \TYPO3\Media\Domain\Model\Image
+     * @return Image
      */
     public function getImage()
     {

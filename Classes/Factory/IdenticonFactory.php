@@ -93,7 +93,7 @@ class IdenticonFactory
         $content = ob_get_contents();
         ob_clean();
 
-        $resource = $this->resourceManager->createResourceFromContent($content, $hash . '.png');
+        $resource = $this->resourceManager->importResourceFromContent($content, $hash . '.png');
 
         return new Image($resource);
     }
