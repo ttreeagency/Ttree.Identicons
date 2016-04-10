@@ -4,9 +4,9 @@ TYPO3:
       firewall:
         filters:
           -
-            patternType:  'URI'
+            patternType: 'URI'
             patternValue: '/i/.*'
-            interceptor:  'Ttree\Identicons\Authorization\Interceptor\FloodMitigation'
+            interceptor: 'Ttree\Identicons\Authorization\Interceptor\FloodMitigation'
 
 Ttree:
   Identicons:

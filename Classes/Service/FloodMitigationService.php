@@ -12,7 +12,9 @@ namespace Ttree\Identicons\Service;
  *                                                                        */
 
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Cache\Frontend\VariableFrontend;
 use TYPO3\Flow\Mvc\ActionRequest;
+use TYPO3\Flow\Security\Exception\AccessDeniedException;
 use TYPO3\Flow\Utility\Now;
 
 /**
@@ -21,24 +23,24 @@ use TYPO3\Flow\Utility\Now;
 class FloodMitigationService
 {
     /**
-     * @var \TYPO3\Flow\Cache\Frontend\VariableFrontend
+     * @var VariableFrontend
      * @Flow\Inject
      */
     protected $cache;
 
     /**
-     * @var \Ttree\Identicons\Service\SettingsService
+     * @var SettingsService
      * @Flow\Inject
      */
     protected $settingsService;
 
     /**
-     * @param ActionRequest $request
-     * @throws \TYPO3\Flow\Security\Exception\AccessDeniedException
+     * @param string $ipAddress
+     * @throws AccessDeniedException
      */
-    public function registerRequest(ActionRequest $request)
+    public function registerAccess($ipAddress)
     {
-        $cacheKey = $this->generateCacheKey($request->getHttpRequest()->getClientIpAddress());
+        $cacheKey = $this->generateCacheKey($ipAddress);
         if (false === $cacheValue = $this->cache->get($cacheKey)) {
             $cacheValue = 1;
         } else {
@@ -47,23 +49,8 @@ class FloodMitigationService
         $this->cache->set($cacheKey, $cacheValue);
 
         if ($cacheValue > $this->settingsService->get('flood.limit')) {
-            throw new \TYPO3\Flow\Security\Exception\AccessDeniedException('Rate Limiting Protection', 1376922729);
+            throw new AccessDeniedException('Your IP address is currently blocked by our rate limiting system', 1376922729);
         }
-    }
-
-    /**
-     * @param string $clientIpAddress
-     * @return bool
-     */
-    public function validateAccessByClientIpAddress($clientIpAddress)
-    {
-        $cacheKey = $this->generateCacheKey($clientIpAddress);
-        if (false === $cacheValue = $this->cache->get($cacheKey)) {
-            $access = true;
-        } else {
-            $access = $cacheValue <= $this->settingsService->get('flood.limit');
-        }
-        return $access;
     }
 
     /**
