@@ -11,23 +11,27 @@ namespace Ttree\Identicons\Authorization\Interceptor;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Ttree\Identicons\Service\FloodMitigationService;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Core\Bootstrap;
+use TYPO3\Flow\Security\Authorization\InterceptorInterface;
+use TYPO3\Flow\Security\Exception\AccessDeniedException;
 
 /**
  * Flood Mitigation
  *
  * @Flow\Scope("singleton")
  */
-class FloodMitigation implements \TYPO3\Flow\Security\Authorization\InterceptorInterface {
+class FloodMitigation implements InterceptorInterface {
 
 	/**
-	 * @var \Ttree\Identicons\Service\FloodMitigationService
+	 * @var FloodMitigationService
 	 * @Flow\Inject
 	 */
 	protected $floodMitigationService;
 
 	/**
-	 * @var \TYPO3\Flow\Core\Bootstrap
+	 * @var Bootstrap
 	 * @Flow\Inject
 	 */
 	protected $bootstrap;
@@ -36,18 +40,16 @@ class FloodMitigation implements \TYPO3\Flow\Security\Authorization\InterceptorI
 	 * Invokes nothing, always throws an AccessDenied Exception.
 	 *
 	 * @return boolean Always returns FALSE
-	 * @throws \TYPO3\Flow\Security\Exception\AccessDeniedException
+	 * @throws AccessDeniedException
 	 */
 	public function invoke() {
 		/** @var \TYPO3\Flow\Http\Request $requestHandler */
 		$requestHandler = $this->bootstrap->getActiveRequestHandler()->getHttpRequest();
 		if (!$this->floodMitigationService->validateAccessByClientIpAddress($requestHandler->getClientIpAddress())) {
-			throw new \TYPO3\Flow\Security\Exception\AccessDeniedException('Your IP address is currently blocked by our rate limiting system', 1376924106);
+			throw new AccessDeniedException('Your IP address is currently blocked by our rate limiting system', 1376924106);
 		}
 
 		return TRUE;
 	}
 
 }
-
-?>
