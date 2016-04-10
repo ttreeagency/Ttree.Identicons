@@ -11,15 +11,15 @@ namespace Ttree\Identicons\Domain\Repository;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
-use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
+use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Persistence\Repository;
 
 /**
  * Identicon Repository
  *
- * @package Ttree\Identicons\Domain\Repository
  * @Flow\Scope("singleton")
  */
-class IdenticonRepository extends \TYPO3\Flow\Persistence\Repository
+class IdenticonRepository extends Repository
 {
 }

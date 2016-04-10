@@ -20,6 +20,7 @@ use TYPO3\Flow\Utility\Arrays;
 class SettingsService
 {
     /**
+     * @Flow\InjectConfiguration
      * @var array
      */
     protected $settings;

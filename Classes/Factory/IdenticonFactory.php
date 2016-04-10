@@ -12,9 +12,15 @@ namespace Ttree\Identicons\Factory;
  *                                                                        */
 
 use Ttree\Identicons\Domain\Model\Identicon;
+use Ttree\Identicons\Domain\Repository\IdenticonRepository;
+use Ttree\Identicons\Generator\GeneratorInterface;
+use Ttree\Identicons\Service\SettingsService;
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
+use TYPO3\Flow\Persistence\PersistenceManagerInterface;
+use TYPO3\Flow\Resource\ResourceManager;
 use TYPO3\Media\Domain\Model\Image;
+use TYPO3\Media\Domain\Repository\ImageRepository;
 
 /**
  * Identicon Factory
@@ -24,44 +30,44 @@ use TYPO3\Media\Domain\Model\Image;
 class IdenticonFactory
 {
     /**
-     * @var \Ttree\Identicons\Generator\GeneratorInterface
+     * @var GeneratorInterface
      * @Flow\Inject
      */
     protected $identiconGenerator;
 
     /**
+     * @var ResourceManager
      * @Flow\Inject
-     * @var \TYPO3\Flow\Resource\ResourceManager
      */
     protected $resourceManager;
 
     /**
-     * @var \TYPO3\Media\Domain\Repository\ImageRepository
+     * @var ImageRepository
      * @Flow\Inject
      */
     protected $imageRepository;
 
     /**
-     * @var \Ttree\Identicons\Domain\Repository\IdenticonRepository
+     * @var IdenticonRepository
      * @Flow\Inject
      */
     protected $identiconRepository;
 
     /**
-     * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+     * @var PersistenceManagerInterface
      * @Flow\Inject
      */
     protected $persistenceManager;
 
     /**
-     * @var \Ttree\Identicons\Service\SettingsService
+     * @var SettingsService
      * @Flow\Inject
      */
     protected $settingsService;
 
     /**
      * @param string $hash
-     * @return \Ttree\Identicons\Domain\Model\Identicon
+     * @return Identicon
      */
     public function create($hash)
     {

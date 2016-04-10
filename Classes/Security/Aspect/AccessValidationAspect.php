@@ -11,29 +11,30 @@ namespace Ttree\Identicons\Security\Aspect;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Ttree\Identicons\Security\AccessValidationInterface;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Aop\JoinPointInterface;
 
 /**
- * Class GrantAccessAspect
+ * Access Validation Aspect
  *
  * @Flow\Aspect
  * @Flow\Scope("singleton")
- * @package Ttree\Identicons\Security\Aspect
  */
 class AccessValidationAspect
 {
     /**
-     * @var \Ttree\Identicons\Security\AccessValidationInterface
+     * @var AccessValidationInterface
      * @Flow\Inject
      */
     protected $accessValidation;
 
     /**
      * @Flow\Before("setting(Ttree.Identicons.access.enable) && method(public Ttree\Identicons\Controller\IdenticonsController->generateAction())")
-     * @param \TYPO3\Flow\Aop\JoinPointInterface $joinPoint The current join point
+     * @param JoinPointInterface $joinPoint The current join point
      * @return string
      */
-    public function floodMitigation(\TYPO3\Flow\Aop\JoinPointInterface $joinPoint)
+    public function check(JoinPointInterface $joinPoint)
     {
         $hash = $joinPoint->getMethodArgument('hash');
         $this->accessValidation->check($hash);
