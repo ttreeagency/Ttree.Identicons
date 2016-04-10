@@ -18,15 +18,12 @@ use TYPO3\Flow\Annotations as Flow;
  *
  * @package Ttree\Identicons\Generator
  */
-interface GeneratorInterface {
-
-	/**
-	 * @param string $hash
-	 * @param int $size
-	 * @return \Imagine\Image\ImageInterface
-	 */
-	public function generate($hash, $size = NULL);
-
+interface GeneratorInterface
+{
+    /**
+     * @param string $hash
+     * @param int $size
+     * @return \Imagine\Image\ImageInterface
+     */
+    public function generate($hash, $size = null);
 }
-
-?>

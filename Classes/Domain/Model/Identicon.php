@@ -19,56 +19,58 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @Flow\Entity
  */
-class Identicon {
+class Identicon
+{
+    /**
+     * @var string
+     * @ORM\Id
+     */
+    protected $token;
 
-	/**
-	 * @var string
-	 * @ORM\Id
-	 */
-	protected $token;
+    /**
+     * @var \TYPO3\Media\Domain\Model\Image
+     * @ORM\OneToOne(cascade={"persist"})
+     */
+    protected $image;
 
-	/**
-	 * @var \TYPO3\Media\Domain\Model\Image
-	 * @ORM\OneToOne(cascade={"persist"})
-	 */
-	protected $image;
+    /**
+     * @param \TYPO3\Media\Domain\Model\Image $image
+     * @param string $token
+     */
+    public function __construct(\TYPO3\Media\Domain\Model\Image $image, $token)
+    {
+        $this->image = $image;
+        $this->token = $token;
+    }
 
-	/**
-	 * @param \TYPO3\Media\Domain\Model\Image $image
-	 * @param string $token
-	 */
-	function __construct(\TYPO3\Media\Domain\Model\Image $image, $token) {
-		$this->image = $image;
-		$this->token = $token;
-	}
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getToken() {
-		return $this->token;
-	}
+    /**
+     * @return string
+     */
+    public function render()
+    {
+        $content = '';
+        if ($this->getImage() !== null && $this->getImage()->getResource() !== null) {
+            $handle  = fopen($this->getImage()->getResource()->getUri(), 'rb');
+            $content = stream_get_contents($handle);
+            fclose($handle);
+        }
 
-	/**
-	 * @return string
-	 */
-	public function render() {
-		$content = '';
-		if ($this->getImage() !== NULL && $this->getImage()->getResource() !== NULL) {
-			$handle  = fopen($this->getImage()->getResource()->getUri(), 'rb');
-			$content = stream_get_contents($handle);
-			fclose($handle);
-		}
+        return $content;
+    }
 
-		return $content;
-	}
-
-	/**
-	 * @return \TYPO3\Media\Domain\Model\Image
-	 */
-	public function getImage() {
-		return $this->image;
-	}
+    /**
+     * @return \TYPO3\Media\Domain\Model\Image
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
 }
-
-?>

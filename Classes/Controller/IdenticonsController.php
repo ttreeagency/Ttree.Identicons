@@ -18,36 +18,34 @@ use TYPO3\Flow\Annotations as Flow;
  *
  * @package Ttree\Identicons\Controller
  */
-class IdenticonsController extends \TYPO3\Flow\Mvc\Controller\ActionController {
+class IdenticonsController extends \TYPO3\Flow\Mvc\Controller\ActionController
+{
+    /**
+     * @var \Ttree\Identicons\Factory\IdenticonFactory
+     * @Flow\Inject
+     */
+    protected $identiconFactory;
 
-	/**
-	 * @var \Ttree\Identicons\Factory\IdenticonFactory
-	 * @Flow\Inject
-	 */
-	protected $identiconFactory;
+    /**
+     * @var \Ttree\Identicons\Service\SettingsService
+     * @Flow\Inject
+     */
+    protected $settingsService;
 
-	/**
-	 * @var \Ttree\Identicons\Service\SettingsService
-	 * @Flow\Inject
-	 */
-	protected $settingsService;
+    /**
+     * @param string $hash
+     * @return string
+     */
+    public function generateAction($hash)
+    {
+        $ttl = $this->settingsService->getCacheControlMaxAge();
 
-	/**
-	 * @param string $hash
-	 * @return string
-	 */
-	public function generateAction($hash) {
-		$ttl = $this->settingsService->getCacheControlMaxAge();
+        $this->response->setHeader('Content-Type', 'image/png');
+        $this->response->setHeader('Cache-Control', sprintf('max-age=%i, public', $ttl));
+        $this->response->setHeader('Expires', date(DATE_RFC1123, time()+$ttl));
 
-		$this->response->setHeader('Content-Type', 'image/png');
-		$this->response->setHeader('Cache-Control', sprintf('max-age=%i, public', $ttl));
-		$this->response->setHeader('Expires', date(DATE_RFC1123,time()+$ttl));
+        $identicon = $this->identiconFactory->create($hash);
 
-		$identicon = $this->identiconFactory->create($hash);
-
-		return $identicon->render();
-	}
-
+        return $identicon->render();
+    }
 }
-
-?>

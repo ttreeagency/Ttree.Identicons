@@ -18,15 +18,12 @@ use TYPO3\Flow\Annotations as Flow;
  *
  * @package Ttree\Identicons\Security
  */
-class DummyAccessValidation implements AccessValidationInterface {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function check($hash) {
-
-	}
-
+class DummyAccessValidation implements AccessValidationInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function check($hash)
+    {
+    }
 }
-
-?>

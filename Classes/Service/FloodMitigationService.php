@@ -18,61 +18,63 @@ use TYPO3\Flow\Utility\Now;
 /**
  * @Flow\Scope("singleton")
  */
-class FloodMitigationService {
+class FloodMitigationService
+{
+    /**
+     * @var \TYPO3\Flow\Cache\Frontend\VariableFrontend
+     * @Flow\Inject
+     */
+    protected $cache;
 
-	/**
-	 * @var \TYPO3\Flow\Cache\Frontend\VariableFrontend
-	 * @Flow\Inject
-	 */
-	protected $cache;
+    /**
+     * @var \Ttree\Identicons\Service\SettingsService
+     * @Flow\Inject
+     */
+    protected $settingsService;
 
-	/**
-	 * @var \Ttree\Identicons\Service\SettingsService
-	 * @Flow\Inject
-	 */
-	protected $settingsService;
+    /**
+     * @param ActionRequest $request
+     * @throws \TYPO3\Flow\Security\Exception\AccessDeniedException
+     */
+    public function registerRequest(ActionRequest $request)
+    {
+        $cacheKey = $this->generateCacheKey($request->getHttpRequest()->getClientIpAddress());
+        if (false === $cacheValue = $this->cache->get($cacheKey)) {
+            $cacheValue = 1;
+        } else {
+            $cacheValue++;
+        }
+        $this->cache->set($cacheKey, $cacheValue);
 
-	/**
-	 * @param ActionRequest $request
-	 * @throws \TYPO3\Flow\Security\Exception\AccessDeniedException
-	 */
-	public function registerRequest(ActionRequest $request) {
-		$cacheKey = $this->generateCacheKey($request->getHttpRequest()->getClientIpAddress());
-		if (FALSE === $cacheValue = $this->cache->get($cacheKey)) {
-			$cacheValue = 1;
-		} else {
-			$cacheValue++;
-		}
-		$this->cache->set($cacheKey, $cacheValue);
+        if ($cacheValue > $this->settingsService->get('flood.limit')) {
+            throw new \TYPO3\Flow\Security\Exception\AccessDeniedException('Rate Limiting Protection', 1376922729);
+        }
+    }
 
-		if ($cacheValue > $this->settingsService->get('flood.limit')) {
-			throw new \TYPO3\Flow\Security\Exception\AccessDeniedException('Rate Limiting Protection', 1376922729);
-		}
-	}
+    /**
+     * @param string $clientIpAddress
+     * @return bool
+     */
+    public function validateAccessByClientIpAddress($clientIpAddress)
+    {
+        $cacheKey = $this->generateCacheKey($clientIpAddress);
+        if (false === $cacheValue = $this->cache->get($cacheKey)) {
+            $access = true;
+        } else {
+            $access = $cacheValue <= $this->settingsService->get('flood.limit');
+        }
+        return $access;
+    }
 
-	/**
-	 * @param string $clientIpAddress
-	 * @return bool
-	 */
-	public function validateAccessByClientIpAddress($clientIpAddress) {
-		$cacheKey = $this->generateCacheKey($clientIpAddress);
-		if (FALSE === $cacheValue = $this->cache->get($cacheKey)) {
-			$access = TRUE;
-		} else {
-			$access = $cacheValue <= $this->settingsService->get('flood.limit');
-		}
-		return $access;
-	}
+    /**
+     * @param string $clientIpAddress
+     * @return string
+     */
+    protected function generateCacheKey($clientIpAddress)
+    {
+        $now = new Now();
+        $currentMinute = $now->getTimestamp() - $now->getTimestamp() % 60;
 
-	/**
-	 * @param string $clientIpAddress
-	 * @return string
-	 */
-	protected function generateCacheKey($clientIpAddress) {
-		$now = new Now();
-		$currentMinute = $now->getTimestamp() - $now->getTimestamp() % 60;
-
-		return md5($clientIpAddress) . '_' . $currentMinute;
-	}
+        return md5($clientIpAddress) . '_' . $currentMinute;
+    }
 }
-?>

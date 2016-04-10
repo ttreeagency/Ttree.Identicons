@@ -22,34 +22,34 @@ use TYPO3\Flow\Security\Exception\AccessDeniedException;
  *
  * @Flow\Scope("singleton")
  */
-class FloodMitigation implements InterceptorInterface {
+class FloodMitigation implements InterceptorInterface
+{
+    /**
+     * @var FloodMitigationService
+     * @Flow\Inject
+     */
+    protected $floodMitigationService;
 
-	/**
-	 * @var FloodMitigationService
-	 * @Flow\Inject
-	 */
-	protected $floodMitigationService;
+    /**
+     * @var Bootstrap
+     * @Flow\Inject
+     */
+    protected $bootstrap;
 
-	/**
-	 * @var Bootstrap
-	 * @Flow\Inject
-	 */
-	protected $bootstrap;
+    /**
+     * Invokes nothing, always throws an AccessDenied Exception.
+     *
+     * @return boolean Always returns FALSE
+     * @throws AccessDeniedException
+     */
+    public function invoke()
+    {
+        /** @var \TYPO3\Flow\Http\Request $requestHandler */
+        $requestHandler = $this->bootstrap->getActiveRequestHandler()->getHttpRequest();
+        if (!$this->floodMitigationService->validateAccessByClientIpAddress($requestHandler->getClientIpAddress())) {
+            throw new AccessDeniedException('Your IP address is currently blocked by our rate limiting system', 1376924106);
+        }
 
-	/**
-	 * Invokes nothing, always throws an AccessDenied Exception.
-	 *
-	 * @return boolean Always returns FALSE
-	 * @throws AccessDeniedException
-	 */
-	public function invoke() {
-		/** @var \TYPO3\Flow\Http\Request $requestHandler */
-		$requestHandler = $this->bootstrap->getActiveRequestHandler()->getHttpRequest();
-		if (!$this->floodMitigationService->validateAccessByClientIpAddress($requestHandler->getClientIpAddress())) {
-			throw new AccessDeniedException('Your IP address is currently blocked by our rate limiting system', 1376924106);
-		}
-
-		return TRUE;
-	}
-
+        return true;
+    }
 }

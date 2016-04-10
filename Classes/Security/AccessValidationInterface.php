@@ -23,14 +23,11 @@ use TYPO3\Flow\Annotations as Flow;
  *
  * @package Ttree\Identicons\Security
  */
-interface AccessValidationInterface {
-
-	/**
-	 * @param string $hash
-	 * @return void
-	 */
-	public function check($hash);
-
+interface AccessValidationInterface
+{
+    /**
+     * @param string $hash
+     * @return void
+     */
+    public function check($hash);
 }
-
-?>

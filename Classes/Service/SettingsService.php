@@ -17,41 +17,43 @@ use TYPO3\Flow\Utility\Arrays;
 /**
  * @Flow\Scope("singleton")
  */
-class SettingsService {
+class SettingsService
+{
+    /**
+     * @var array
+     */
+    protected $settings;
 
-	/**
-	 * @var array
-	 */
-	protected $settings;
+    /**
+     * @param array $settings
+     */
+    public function injectSettings(array $settings)
+    {
+        $this->settings = $settings;
+    }
 
-	/**
-	 * @param array $settings
-	 */
-	public function injectSettings(array $settings) {
-		$this->settings = $settings;
-	}
+    /**
+     * @param string $path
+     * @return string|array|boolean
+     */
+    public function get($path)
+    {
+        return Arrays::getValueByPath($this->settings, $path);
+    }
 
-	/**
-	 * @param string $path
-	 * @return string|array|boolean
-	 */
-	public function get($path) {
-		return Arrays::getValueByPath($this->settings, $path);
-	}
+    /**
+     * @return integer
+     */
+    public function getCacheControlMaxAge()
+    {
+        return (int)$this->get('ttl') ?: 2592000;
+    }
 
-	/**
-	 * @return integer
-	 */
-	public function getCacheControlMaxAge() {
-		return (int)$this->get('ttl') ?: 2592000;
-	}
-
-	/**
-	 * @return integer
-	 */
-	public function getDefaultIconSize() {
-		return (int)$this->get('size') ? : 420;
-	}
-
+    /**
+     * @return integer
+     */
+    public function getDefaultIconSize()
+    {
+        return (int)$this->get('size') ? : 420;
+    }
 }
-?>

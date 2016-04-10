@@ -20,8 +20,6 @@ use Doctrine\ORM\Mapping as ORM;
  * @package Ttree\Identicons\Domain\Repository
  * @Flow\Scope("singleton")
  */
-class IdenticonRepository extends \TYPO3\Flow\Persistence\Repository {
-
+class IdenticonRepository extends \TYPO3\Flow\Persistence\Repository
+{
 }
-
-?>
