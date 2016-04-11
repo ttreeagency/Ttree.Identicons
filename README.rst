@@ -2,7 +2,7 @@
 FLOW Package to generate Identicons
 ***********************************
 
-This contains the TYPO3 Flow package "Ttree.Identicons" to generate Identicons. Currently only two generators are
+This contains the Flow Framework package "Ttree.Identicons" to generate Identicons. Currently only two generators are
 available: Don Park (original version) and Github Style (inspired by the space invader style identicons provided by
 github).
 
@@ -61,7 +61,7 @@ a production use.
 **Important**: When an IP address is blocked, for a maximum of 1 minute, the Application Firewall
 block the request early in the Flow bootstrap (when a request arrive at the MVC dispatcher).
 If you don't use the default URL www.domain/i/hash.png, you need to change the patternValue
-in Settings.yaml, in the TYPO3.Flow firewall section.
+in Settings.yaml, in the Flow Application Firewall section.
 
 ==========================
 Advanced access limitation
@@ -107,9 +107,5 @@ Identicons Samples
 .. figure:: Documentation/Sample/dfeyer-donpark.png
 	:alt: Don Park
 
-	the Don Park style identicon for "dfeyer"
-
 .. figure:: Documentation/Sample/ttree-githubstyle.png
 	:alt: Github Style
-
-	the Github style identicon for "ttree"
