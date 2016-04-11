@@ -76,8 +76,8 @@ class IdenticonFactory
             $identicon = new Identicon($this->createImageFromService($hash), $hash);
             if ($this->settingsService->get('persist') === true) {
                 $this->identiconRepository->add($identicon);
+                $this->persistenceManager->persistAll();
             }
-            $this->persistenceManager->persistAll();
         }
 
         return $identicon;
