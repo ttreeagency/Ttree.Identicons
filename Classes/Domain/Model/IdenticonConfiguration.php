@@ -43,7 +43,8 @@ class IdenticonConfiguration
     public function __construct($hash, $size = 80)
     {
         $this->originalHash = md5(Functions::strtolower(trim($hash)));
-        $this->size = (integer)$size;
+        $size = (integer)$size;
+        $this->size = $size - ($size % 2);
         $hash = Functions::strtolower(trim($hash));
         $this->hash = md5($hash . $this->size);
     }
