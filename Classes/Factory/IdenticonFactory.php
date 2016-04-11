@@ -11,14 +11,16 @@ namespace Ttree\Identicons\Factory;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Doctrine\ORM\Mapping as ORM;
 use Ttree\Identicons\Domain\Model\Identicon;
+use Ttree\Identicons\Domain\Model\IdenticonHash;
 use Ttree\Identicons\Domain\Repository\IdenticonRepository;
 use Ttree\Identicons\Generator\GeneratorInterface;
 use Ttree\Identicons\Service\SettingsService;
 use TYPO3\Flow\Annotations as Flow;
-use Doctrine\ORM\Mapping as ORM;
 use TYPO3\Flow\Persistence\PersistenceManagerInterface;
 use TYPO3\Flow\Resource\ResourceManager;
+use TYPO3\Flow\Utility\Unicode\Functions;
 use TYPO3\Media\Domain\Model\Image;
 use TYPO3\Media\Domain\Repository\ImageRepository;
 
@@ -66,10 +68,10 @@ class IdenticonFactory
     protected $settingsService;
 
     /**
-     * @param string $hash
+     * @param IdenticonHash $hash
      * @return Identicon
      */
-    public function create($hash)
+    public function create(IdenticonHash $hash)
     {
         $identicon = $this->identiconRepository->findByIdentifier($hash);
         if ($identicon === null) {
@@ -84,18 +86,17 @@ class IdenticonFactory
     }
 
     /**
-     * @param string $hash
+     * @param IdenticonHash $hash
      * @return Image
      */
-    protected function createImageFromService($hash)
+    protected function createImageFromService(IdenticonHash $hash)
     {
-        $hash  = md5($hash);
-        $image = $this->identiconGenerator->generate(md5($hash));
+        $image = $this->identiconGenerator->generate($hash);
         ob_start();
-        $image->show('png', array(
+        $image->show('png', [
             'quality' => 9,
-            'filter'  => PNG_ALL_FILTERS
-        ));
+            'filter' => PNG_ALL_FILTERS
+        ]);
         $content = ob_get_contents();
         ob_clean();
 

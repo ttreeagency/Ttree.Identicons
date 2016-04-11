@@ -17,6 +17,7 @@ use Imagine\Image\Palette;
 use Imagine\Image\Palette\Color\ColorInterface;
 use Imagine\Image\Palette\Color\RGB;
 use Imagine\Image\Point;
+use Ttree\Identicons\Domain\Model\IdenticonHash;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Exception;
 
@@ -29,13 +30,12 @@ use TYPO3\Flow\Exception;
 class DonParkGenerator extends AbstractGenerator
 {
     /**
-     * @param string $hash
-     * @param int $size
-     * @return resource
+     * {@inheritdoc}
      */
-    public function generate($hash, $size = null)
+    public function generate(IdenticonHash $hash, $size = null)
     {
         $size = $size ?: $this->settingsService->getDefaultIconSize();
+        $hash = md5($hash);
 
         $cornerSpriteShape = hexdec(substr($hash, 0, 1));
         $sideSpriteShape = hexdec(substr($hash, 1, 1));

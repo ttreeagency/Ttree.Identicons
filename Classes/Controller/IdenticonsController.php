@@ -11,6 +11,7 @@ namespace Ttree\Identicons\Controller;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Ttree\Identicons\Domain\Model\IdenticonHash;
 use Ttree\Identicons\Factory\IdenticonFactory;
 use Ttree\Identicons\Service\SettingsService;
 use TYPO3\Flow\Annotations as Flow;
@@ -45,6 +46,7 @@ class IdenticonsController extends ActionController
         $this->response->setHeader('Cache-Control', sprintf('max-age=%i, public', $ttl));
         $this->response->setHeader('Expires', date(DATE_RFC1123, time()+$ttl));
 
+        $hash = IdenticonHash::create($hash);
         $identicon = $this->identiconFactory->create($hash);
 
         return $identicon->render();

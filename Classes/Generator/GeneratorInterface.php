@@ -11,6 +11,7 @@ namespace Ttree\Identicons\Generator;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Ttree\Identicons\Domain\Model\IdenticonHash;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
@@ -21,9 +22,9 @@ use TYPO3\Flow\Annotations as Flow;
 interface GeneratorInterface
 {
     /**
-     * @param string $hash
-     * @param int $size
+     * @param IdenticonHash $hash
+     * @param integer $size
      * @return \Imagine\Image\ImageInterface
      */
-    public function generate($hash, $size = null);
+    public function generate(IdenticonHash $hash, $size = null);
 }

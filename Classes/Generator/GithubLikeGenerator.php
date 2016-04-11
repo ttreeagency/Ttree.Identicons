@@ -17,6 +17,7 @@ use Imagine\Image\ImageInterface;
 use Imagine\Image\Palette;
 use Imagine\Image\Palette\Color\RGB;
 use Imagine\Image\Point;
+use Ttree\Identicons\Domain\Model\IdenticonHash;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
@@ -35,9 +36,10 @@ class GithubLikeGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate($hash, $size = null)
+    public function generate(IdenticonHash $hash, $size = null)
     {
         $size = $size ?: $this->settingsService->getDefaultIconSize();
+        $hash = md5($hash);
 
         $topCornerSpriteShape = hexdec(substr($hash, 0, 1));
         $bottomCornerSpriteShape = hexdec(substr($hash, 1, 1));

@@ -22,4 +22,11 @@ use TYPO3\Flow\Persistence\Repository;
  */
 class IdenticonRepository extends Repository
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function findByIdentifier($identifier)
+    {
+        return $this->persistenceManager->getObjectByIdentifier((string)$identifier, $this->entityClassName);
+    }
 }
