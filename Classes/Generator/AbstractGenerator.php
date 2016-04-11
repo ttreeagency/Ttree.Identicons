@@ -142,11 +142,10 @@ abstract class AbstractGenerator implements GeneratorInterface
      */
     protected function selectShape(array $shapes, $shape, array $defaultShape)
     {
-        $key = $shape - 1;
-        if (isset($shapes[$key])) {
-            $shape = $shapes[$key];
+        if (isset($shapes[$shape])) {
+            $shape = $shapes[$shape];
         } else {
-            $shape = [1, 1];
+            $shape = $defaultShape;
         }
         return $shape;
     }

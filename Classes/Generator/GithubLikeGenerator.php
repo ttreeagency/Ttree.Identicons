@@ -109,6 +109,7 @@ class GithubLikeGenerator extends AbstractGenerator
     {
         $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize());
 
+        $shape = $shape - 1;
         $shape = $this->selectShape($this->getConfigurationPath('squareSprite.shapes'), $shape, $this->getConfigurationPath('squareSprite.default'));
 
         $size = $sprite->getSize();
@@ -153,6 +154,7 @@ class GithubLikeGenerator extends AbstractGenerator
     {
         $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize() / 2);
 
+        $shape = $shape - 1;
         $shape = $this->selectShape($this->getConfigurationPath('rectangularSprite.shapes'), $shape, $this->getConfigurationPath('rectangularSprite.default'));
 
         $size = $sprite->getSize();

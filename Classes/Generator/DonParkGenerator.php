@@ -100,56 +100,7 @@ class DonParkGenerator extends AbstractGenerator
     {
         $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize(), $this->backgroundColor);
 
-        switch ($shape) {
-            case 0: // triangle
-                $shape = [0.5, 1, 1, 0, 1, 1];
-                break;
-            case 1: // parallelogram
-                $shape = [0.5, 0, 1, 0, 0.5, 1, 0, 1];
-                break;
-            case 2: // mouse ears
-                $shape = [0.5, 0, 1, 0, 1, 1, 0.5, 1, 1, 0.5];
-                break;
-            case 3: // ribbon
-                $shape = [0, 0.5, 0.5, 0, 1, 0.5, 0.5, 1, 0.5, 0.5];
-                break;
-            case 4: // sails
-                $shape = [0, 0.5, 1, 0, 1, 1, 0, 1, 1, 0.5];
-                break;
-            case 5: // fins
-                $shape = [1, 0, 1, 1, 0.5, 1, 1, 0.5, 0.5, 0.5];
-                break;
-            case 6: // beak
-                $shape = [0, 0, 1, 0, 1, 0.5, 0, 0, 0.5, 1, 0, 1];
-                break;
-            case 7: // chevron
-                $shape = [0, 0, 0.5, 0, 1, 0.5, 0.5, 1, 0, 1, 0.5, 0.5];
-                break;
-            case 8: // fish
-                $shape = [0.5, 0, 0.5, 0.5, 1, 0.5, 1, 1, 0.5, 1, 0.5, 0.5, 0, 0.5];
-                break;
-            case 9: // kite
-                $shape = [0, 0, 1, 0, 0.5, 0.5, 1, 0.5, 0.5, 1, 0.5, 0.5, 0, 1];
-                break;
-            case 10: // trough
-                $shape = [0, 0.5, 0.5, 1, 1, 0.5, 0.5, 0, 1, 0, 1, 1, 0, 1];
-                break;
-            case 11: // rays
-                $shape = [0.5, 0, 1, 0, 1, 1, 0.5, 1, 1, 0.75, 0.5, 0.5, 1, 0.25];
-                break;
-            case 12: // double rhombus
-                $shape = [0, 0.5, 0.5, 0, 0.5, 0.5, 1, 0, 1, 0.5, 0.5, 1, 0.5, 0.5, 0, 1];
-                break;
-            case 13: // crown
-                $shape = [0, 0, 1, 0, 1, 1, 0, 1, 1, 0.5, 0.5, 0.25, 0.5, 0.75, 0, 0.5, 0.5, 0.25];
-                break;
-            case 14: // radioactive
-                $shape = [0, 0.5, 0.5, 0.5, 0.5, 0, 1, 0, 0.5, 0.5, 1, 0.5, 0.5, 1, 0.5, 0.5, 0, 1];
-                break;
-            default: // tiles
-                $shape = [0, 0, 1, 0, 0.5, 0.5, 0.5, 0, 0, 0.5, 1, 0.5, 0.5, 1, 0.5, 0.5, 0, 1];
-                break;
-        }
+        $shape = $this->selectShape($this->getConfigurationPath('sprite.shapes'), $shape, $this->getConfigurationPath('sprite.default'));
         $sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->settingsService->getDefaultIconSize()), $foregroundColor, true);
 
         /* rotate the sprite */
@@ -175,33 +126,8 @@ class DonParkGenerator extends AbstractGenerator
             $backgroundColor = $this->backgroundColor;
         }
 
+        $shape = $this->selectShape($this->getConfigurationPath('centerSprite.shapes'), $shape, $this->getConfigurationPath('centerSprite.default'));
         $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize(), $backgroundColor);
-        switch ($shape) {
-            case 0: // empty
-                $shape = [];
-                break;
-            case 1: // fill
-                $shape = [0, 0, 1, 0, 1, 1, 0, 1];
-                break;
-            case 2: // diamond
-                $shape = [0.5, 0, 1, 0.5, 0.5, 1, 0, 0.5];
-                break;
-            case 3: // reverse diamond
-                $shape = [0, 0, 1, 0, 1, 1, 0, 1, 0, 0.5, 0.5, 1, 1, 0.5, 0.5, 0, 0, 0.5];
-                break;
-            case 4: // cross
-                $shape = [0.25, 0, 0.75, 0, 0.5, 0.5, 1, 0.25, 1, 0.75, 0.5, 0.5, 0.75, 1, 0.25, 1, 0.5, 0.5, 0, 0.75, 0, 0.25, 0.5, 0.5];
-                break;
-            case 5: // morning star
-                $shape = [0, 0, 0.5, 0.25, 1, 0, 0.75, 0.5, 1, 1, 0.5, 0.75, 0, 1, 0.25, 0.5];
-                break;
-            case 6: // small square
-                $shape = [0.33, 0.33, 0.67, 0.33, 0.67, 0.67, 0.33, 0.67];
-                break;
-            case 7: // checkerboard
-                $shape = [0, 0, 0.33, 0, 0.33, 0.33, 0.66, 0.33, 0.67, 0, 1, 0, 1, 0.33, 0.67, 0.33, 0.67, 0.67, 1, 0.67, 1, 1, 0.67, 1, 0.67, 0.67, 0.33, 0.67, 0.33, 1, 0, 1, 0, 0.67, 0.33, 0.67, 0.33, 0.33, 0, 0.33];
-                break;
-        }
         for ($i = 0; $i < count($shape); $i++) {
             $shape[$i] = $shape[$i] * $this->settingsService->getDefaultIconSize();
         }
