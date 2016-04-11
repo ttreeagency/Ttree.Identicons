@@ -11,10 +11,11 @@ namespace Ttree\Identicons\Controller;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
-use Ttree\Identicons\Domain\Model\IdenticonHash;
+use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
 use Ttree\Identicons\Factory\IdenticonFactory;
 use Ttree\Identicons\Service\SettingsService;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Exception;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 
 /**
@@ -36,17 +37,22 @@ class IdenticonsController extends ActionController
 
     /**
      * @param string $hash
+     * @param integer $s
      * @return string
+     * @throws Exception
      */
-    public function generateAction($hash)
+    public function generateAction($hash, $s = 80)
     {
+        if ($this->request->getFormat() !== 'png') {
+            throw new Exception('Invalid request format, currently only PNG format is supported', 1460365289);
+        }
         $ttl = $this->settingsService->getCacheControlMaxAge();
 
         $this->response->setHeader('Content-Type', 'image/png');
         $this->response->setHeader('Cache-Control', sprintf('max-age=%i, public', $ttl));
         $this->response->setHeader('Expires', date(DATE_RFC1123, time()+$ttl));
 
-        $hash = IdenticonHash::create($hash);
+        $hash = IdenticonConfiguration::create($hash, $s);
         $identicon = $this->identiconFactory->create($hash);
 
         return $identicon->render();

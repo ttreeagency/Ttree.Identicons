@@ -13,7 +13,7 @@ namespace Ttree\Identicons\Factory;
 
 use Doctrine\ORM\Mapping as ORM;
 use Ttree\Identicons\Domain\Model\Identicon;
-use Ttree\Identicons\Domain\Model\IdenticonHash;
+use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
 use Ttree\Identicons\Domain\Repository\IdenticonRepository;
 use Ttree\Identicons\Generator\GeneratorInterface;
 use Ttree\Identicons\Service\SettingsService;
@@ -68,10 +68,10 @@ class IdenticonFactory
     protected $settingsService;
 
     /**
-     * @param IdenticonHash $hash
+     * @param IdenticonConfiguration $hash
      * @return Identicon
      */
-    public function create(IdenticonHash $hash)
+    public function create(IdenticonConfiguration $hash)
     {
         $identicon = $this->identiconRepository->findByIdentifier($hash);
         if ($identicon === null) {
@@ -86,10 +86,10 @@ class IdenticonFactory
     }
 
     /**
-     * @param IdenticonHash $hash
+     * @param IdenticonConfiguration $hash
      * @return Image
      */
-    protected function createImageFromService(IdenticonHash $hash)
+    protected function createImageFromService(IdenticonConfiguration $hash)
     {
         $image = $this->identiconGenerator->generate($hash);
         ob_start();

@@ -17,7 +17,7 @@ use Imagine\Image\ImageInterface;
 use Imagine\Image\Palette;
 use Imagine\Image\Palette\Color\RGB;
 use Imagine\Image\Point;
-use Ttree\Identicons\Domain\Model\IdenticonHash;
+use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
@@ -36,10 +36,12 @@ class GithubLikeGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(IdenticonHash $hash, $size = null)
+    public function generate(IdenticonConfiguration $hash)
     {
-        $size = $size ?: $this->settingsService->getDefaultIconSize();
-        $hash = md5($hash);
+        parent::generate($hash);
+        
+        $size = $this->defaultSize;
+        $hash = $hash->getOriginalHash();
 
         $topCornerSpriteShape = hexdec(substr($hash, 0, 1));
         $bottomCornerSpriteShape = hexdec(substr($hash, 1, 1));
@@ -76,13 +78,12 @@ class GithubLikeGenerator extends AbstractGenerator
         $identicon->paste($centerSprite, new Point($size, $size));
 
         $size = $identicon->getSize();
-        $padding = $this->settingsService->getDefaultIconSize() / 2;
+        $padding = $this->defaultSize / 2;
         $resized = $this->createImage($size->getWidth() + $padding, $size->getHeight() + $padding);
         $resized
             ->paste($identicon, new Point($padding / 2, $padding / 2))
-            ->resize(new Box($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize()));
-
-        return $this->pad($identicon, $this->settingsService->getDefaultIconSize() / 2);
+            ->resize(new Box($this->defaultSize, $this->defaultSize));
+        return $this->pad($identicon, $this->defaultSize / 2);
     }
 
     /**
@@ -107,13 +108,13 @@ class GithubLikeGenerator extends AbstractGenerator
      */
     protected function getSquareSprite($shape, $rotation = null)
     {
-        $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize());
+        $sprite = $this->createImage($this->defaultSize, $this->defaultSize);
 
         $shape = $shape - 1;
         $shape = $this->selectShape($this->getConfigurationPath('squareSprite.shapes'), $shape, $this->getConfigurationPath('squareSprite.default'));
 
         $size = $sprite->getSize();
-        $square = $this->createImage(0.5 * $this->settingsService->getDefaultIconSize(), 0.5 * $this->settingsService->getDefaultIconSize(), $this->foregroundColor);
+        $square = $this->createImage(0.5 * $this->defaultSize, 0.5 * $this->defaultSize, $this->foregroundColor);
         for ($i = 0; $i < count($shape); $i++) {
             if ($shape[$i] === 0) {
                 continue;
@@ -152,13 +153,13 @@ class GithubLikeGenerator extends AbstractGenerator
      */
     protected function getRectangularSprite($shape, $rotation = null)
     {
-        $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize() / 2);
+        $sprite = $this->createImage($this->defaultSize, $this->defaultSize / 2);
 
         $shape = $shape - 1;
         $shape = $this->selectShape($this->getConfigurationPath('rectangularSprite.shapes'), $shape, $this->getConfigurationPath('rectangularSprite.default'));
 
         $size = $sprite->getSize();
-        $square = $this->createImage(0.5 * $this->settingsService->getDefaultIconSize(), 0.5 * $this->settingsService->getDefaultIconSize(), $this->foregroundColor);
+        $square = $this->createImage(0.5 * $this->defaultSize, 0.5 * $this->defaultSize, $this->foregroundColor);
         for ($i = 0; $i < count($shape); $i++) {
             if ($shape[$i] === 0) {
                 continue;
@@ -200,6 +201,6 @@ class GithubLikeGenerator extends AbstractGenerator
                 $color = $this->backgroundColor;
                 break;
         }
-        return $this->createImage($this->settingsService->getDefaultIconSize() / 2, $this->settingsService->getDefaultIconSize() / 2, $color);
+        return $this->createImage($this->defaultSize / 2, $this->defaultSize / 2, $color);
     }
 }

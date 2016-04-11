@@ -19,7 +19,7 @@ use TYPO3\Media\Domain\Model\Image;
 /**
  * Identicon Hash
  */
-class IdenticonHash
+class IdenticonConfiguration
 {
     /**
      * @var string
@@ -29,24 +29,33 @@ class IdenticonHash
     /**
      * @var string
      */
+    protected $size;
+
+    /**
+     * @var string
+     */
     protected $originalHash;
 
     /**
      * @param string $hash
+     * @param integer $size
      */
-    public function __construct($hash)
+    public function __construct($hash, $size = 80)
     {
-        $this->originalHash = Functions::strtolower(trim($hash));
-        $this->hash = md5($this->originalHash);
+        $this->originalHash = md5(Functions::strtolower(trim($hash)));
+        $this->size = (integer)$size;
+        $hash = Functions::strtolower(trim($hash));
+        $this->hash = md5($hash . $this->size);
     }
 
     /**
      * @param string $hash
-     * @return string
+     * @param integer $size
+     * @return IdenticonConfiguration
      */
-    public static function create($hash)
+    public static function create($hash, $size)
     {
-        return new IdenticonHash($hash);
+        return new IdenticonConfiguration($hash, $size);
     }
 
     /**
@@ -55,6 +64,14 @@ class IdenticonHash
     public function getOriginalHash()
     {
         return $this->originalHash;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSize()
+    {
+        return $this->size;
     }
 
     /**

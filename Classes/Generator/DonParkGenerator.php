@@ -17,7 +17,7 @@ use Imagine\Image\Palette;
 use Imagine\Image\Palette\Color\ColorInterface;
 use Imagine\Image\Palette\Color\RGB;
 use Imagine\Image\Point;
-use Ttree\Identicons\Domain\Model\IdenticonHash;
+use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Exception;
 
@@ -32,10 +32,12 @@ class DonParkGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(IdenticonHash $hash, $size = null)
+    public function generate(IdenticonConfiguration $hash)
     {
-        $size = $size ?: $this->settingsService->getDefaultIconSize();
-        $hash = md5($hash);
+        parent::generate($hash);
+
+        $size = $this->defaultSize;
+        $hash = $hash->getOriginalHash();
 
         $cornerSpriteShape = hexdec(substr($hash, 0, 1));
         $sideSpriteShape = hexdec(substr($hash, 1, 1));
@@ -87,7 +89,7 @@ class DonParkGenerator extends AbstractGenerator
         /* create blank image according to specified dimensions */
         $identicon = $identicon->resize(new Box($size, $size));
 
-        return $this->pad($identicon, $this->settingsService->getDefaultIconSize() / 4);
+        return $this->pad($identicon, $this->defaultSize / 4);
     }
 
     /**
@@ -98,10 +100,10 @@ class DonParkGenerator extends AbstractGenerator
      */
     protected function getSprite($shape, ColorInterface $foregroundColor, $rotation)
     {
-        $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize(), $this->backgroundColor);
+        $sprite = $this->createImage($this->defaultSize, $this->defaultSize, $this->backgroundColor);
 
         $shape = $this->selectShape($this->getConfigurationPath('sprite.shapes'), $shape, $this->getConfigurationPath('sprite.default'));
-        $sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->settingsService->getDefaultIconSize()), $foregroundColor, true);
+        $sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->defaultSize), $foregroundColor, true);
 
         /* rotate the sprite */
         for ($i = 0; $i < $rotation; $i++) {
@@ -127,12 +129,12 @@ class DonParkGenerator extends AbstractGenerator
         }
 
         $shape = $this->selectShape($this->getConfigurationPath('centerSprite.shapes'), $shape, $this->getConfigurationPath('centerSprite.default'));
-        $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize(), $backgroundColor);
+        $sprite = $this->createImage($this->defaultSize, $this->defaultSize, $backgroundColor);
         for ($i = 0; $i < count($shape); $i++) {
             $shape[$i] = $shape[$i] * $this->settingsService->getDefaultIconSize();
         }
         if (count($shape) > 0) {
-            $sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->settingsService->getDefaultIconSize()), $foregroundColor, true);
+            $sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->defaultSize), $foregroundColor, true);
         }
 
         return $sprite;

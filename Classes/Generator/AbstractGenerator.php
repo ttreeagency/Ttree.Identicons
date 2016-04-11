@@ -20,6 +20,7 @@ use Imagine\Image\Palette\Color;
 use Imagine\Image\Palette\ColorParser;
 use Imagine\Image\Point;
 use Imagine\Imagick\Imagine;
+use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
 use Ttree\Identicons\Service\SettingsService;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Utility\Arrays;
@@ -59,6 +60,19 @@ abstract class AbstractGenerator implements GeneratorInterface
      * @var Color\RGB
      */
     protected $backgroundColor;
+
+    /**
+     * @var integer
+     */
+    protected $defaultSize;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function generate(IdenticonConfiguration $hash)
+    {
+        $this->defaultSize = $hash->getSize() ?: $this->settingsService->getDefaultIconSize();
+    }
 
     /**
      * Initialize Object
@@ -113,7 +127,6 @@ abstract class AbstractGenerator implements GeneratorInterface
         }
         $coordinates = [];
         for ($i = 0; $i < $count / 2; $i++) {
-            //$shape[$i] = $shape[$i] * $this->settingsService->getDefaultIconSize();
             $coordinate = array_slice($shape, $i * 2, 2);
             $coordinates[] = new Point($coordinate[0] * $size, $coordinate[1] * $size);
         }
@@ -131,7 +144,7 @@ abstract class AbstractGenerator implements GeneratorInterface
         $size = $image->getSize();
         $resized = $this->createImage($size->getWidth() + $padding, $size->getHeight() + $padding);
 
-        return $resized->paste($image, new Point($padding / 2, $padding / 2))->resize(new Box($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize()));
+        return $resized->paste($image, new Point($padding / 2, $padding / 2))->resize(new Box($this->defaultSize, $this->defaultSize));
     }
 
     /**
