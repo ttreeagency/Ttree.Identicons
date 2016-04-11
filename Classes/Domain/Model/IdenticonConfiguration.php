@@ -40,7 +40,7 @@ class IdenticonConfiguration
      * @param string $hash
      * @param integer $size
      */
-    public function __construct($hash, $size = 80)
+    public function __construct($hash, $size)
     {
         $this->originalHash = md5(Functions::strtolower(trim($hash)));
         $size = (integer)$size;

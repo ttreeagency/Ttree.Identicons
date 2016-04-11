@@ -23,6 +23,7 @@ use Imagine\Imagick\Imagine;
 use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
 use Ttree\Identicons\Service\SettingsService;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Exception;
 use TYPO3\Flow\Utility\Arrays;
 use TYPO3\Imagine\ImagineFactory;
 
@@ -72,6 +73,9 @@ abstract class AbstractGenerator implements GeneratorInterface
     public function generate(IdenticonConfiguration $hash)
     {
         $this->defaultSize = $hash->getSize() ?: $this->settingsService->getDefaultIconSize();
+        if ($this->defaultSize < 32 || $this->defaultSize > 2048) {
+            throw new Exception('Icon size is limited between 32 and 2048', 1460367015);
+        }
     }
 
     /**
