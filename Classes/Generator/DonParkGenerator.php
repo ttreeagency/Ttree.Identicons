@@ -12,9 +12,13 @@ namespace Ttree\Identicons\Generator;
  *                                                                        */
 
 use Imagine\Image\Box;
-use Imagine\Image\Color;
+use Imagine\Image\ImageInterface;
+use Imagine\Image\Palette;
+use Imagine\Image\Palette\Color\ColorInterface;
+use Imagine\Image\Palette\Color\RGB;
 use Imagine\Image\Point;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Exception;
 
 /**
  * Original Don Park identicon generator
@@ -31,22 +35,39 @@ class DonParkGenerator extends AbstractGenerator
      */
     public function generate($hash, $size = null)
     {
-        $size = $size ? : $this->settingsService->getDefaultIconSize();
+        $size = $size ?: $this->settingsService->getDefaultIconSize();
 
         $cornerSpriteShape = hexdec(substr($hash, 0, 1));
-        $sideSpriteShape   = hexdec(substr($hash, 1, 1));
+        $sideSpriteShape = hexdec(substr($hash, 1, 1));
         $centerSpriteShape = hexdec(substr($hash, 2, 1)) & 7;
 
-        $cornerSpriteRotation   = hexdec(substr($hash, 3, 1)) & 3;
-        $sideSpriteRotation     = hexdec(substr($hash, 4, 1)) & 3;
+        $cornerSpriteRotation = hexdec(substr($hash, 3, 1)) & 3;
+        $sideSpriteRotation = hexdec(substr($hash, 4, 1)) & 3;
 
-        $cornerSpriteForegroundColor = new Color(array(hexdec(substr($hash, 6, 2)), hexdec(substr($hash, 8, 2)), hexdec(substr($hash, 10, 2))));
-        $sideSpriteForegroundColor = new Color(array(hexdec(substr($hash, 12, 2)), hexdec(substr($hash, 14, 2)), hexdec(substr($hash, 16, 2))));
-        $centerSpriteForegroundColor = new Color(array(hexdec(substr($hash, 18, 2)), hexdec(substr($hash, 20, 2)), hexdec(substr($hash, 22, 2))));
-        $centerSpriteBackgroundColor = new Color(array(hexdec(substr($hash, 24, 2)), hexdec(substr($hash, 26, 2)), hexdec(substr($hash, 28, 2))));
+        $palette = new Palette\RGB();
+        $cornerSpriteForegroundColor = new RGB($palette, [
+            hexdec(substr($hash, 6, 2)),
+            hexdec(substr($hash, 8, 2)),
+            hexdec(substr($hash, 10, 2))
+        ], 100);
+        $sideSpriteForegroundColor = new RGB($palette, [
+            hexdec(substr($hash, 12, 2)),
+            hexdec(substr($hash, 14, 2)),
+            hexdec(substr($hash, 16, 2))
+        ], 100);
+        $centerSpriteForegroundColor = new RGB($palette, [
+            hexdec(substr($hash, 18, 2)),
+            hexdec(substr($hash, 20, 2)),
+            hexdec(substr($hash, 22, 2))
+        ], 100);
+        $centerSpriteBackgroundColor = new RGB($palette, [
+            hexdec(substr($hash, 24, 2)),
+            hexdec(substr($hash, 26, 2)),
+            hexdec(substr($hash, 28, 2))
+        ], 100);
 
-        $backgroundColor = new Color(array(255, 255, 255));
-        $identicon       = $this->createImage($size * 3, $size * 3, $backgroundColor);
+        $backgroundColor = new RGB($palette, [255, 255, 255], 100);
+        $identicon = $this->createImage($size * 3, $size * 3, $backgroundColor);
 
         $corner = $this->getSprite($cornerSpriteShape, $cornerSpriteForegroundColor, $cornerSpriteRotation);
         $identicon->paste($corner, new Point(0, 0));
@@ -70,181 +91,63 @@ class DonParkGenerator extends AbstractGenerator
     }
 
     /**
-     * @param $shape
-     * @param Color $foregroundColor
-     * @param $rotation
-     * @return \Imagine\Image\ImageInterface
+     * @param integer $shape
+     * @param ColorInterface $foregroundColor
+     * @param integer $rotation
+     * @return ImageInterface
      */
-    protected function getSprite($shape, Color $foregroundColor, $rotation)
+    protected function getSprite($shape, ColorInterface $foregroundColor, $rotation)
     {
         $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize(), $this->backgroundColor);
 
         switch ($shape) {
             case 0: // triangle
-                $shape = array(
-                    0.5, 1,
-                    1, 0,
-                    1, 1
-                );
+                $shape = [0.5, 1, 1, 0, 1, 1];
                 break;
             case 1: // parallelogram
-                $shape = array(
-                    0.5, 0,
-                    1, 0,
-                    0.5, 1,
-                    0, 1
-                );
+                $shape = [0.5, 0, 1, 0, 0.5, 1, 0, 1];
                 break;
             case 2: // mouse ears
-                $shape = array(
-                    0.5, 0,
-                    1, 0,
-                    1, 1,
-                    0.5, 1,
-                    1, 0.5
-                );
+                $shape = [0.5, 0, 1, 0, 1, 1, 0.5, 1, 1, 0.5];
                 break;
             case 3: // ribbon
-                $shape = array(
-                    0, 0.5,
-                    0.5, 0,
-                    1, 0.5,
-                    0.5, 1,
-                    0.5, 0.5
-                );
+                $shape = [0, 0.5, 0.5, 0, 1, 0.5, 0.5, 1, 0.5, 0.5];
                 break;
             case 4: // sails
-                $shape = array(
-                    0, 0.5,
-                    1, 0,
-                    1, 1,
-                    0, 1,
-                    1, 0.5
-                );
+                $shape = [0, 0.5, 1, 0, 1, 1, 0, 1, 1, 0.5];
                 break;
             case 5: // fins
-                $shape = array(
-                    1, 0,
-                    1, 1,
-                    0.5, 1,
-                    1, 0.5,
-                    0.5, 0.5
-                );
+                $shape = [1, 0, 1, 1, 0.5, 1, 1, 0.5, 0.5, 0.5];
                 break;
             case 6: // beak
-                $shape = array(
-                    0, 0,
-                    1, 0,
-                    1, 0.5,
-                    0, 0,
-                    0.5, 1,
-                    0, 1
-                );
+                $shape = [0, 0, 1, 0, 1, 0.5, 0, 0, 0.5, 1, 0, 1];
                 break;
             case 7: // chevron
-                $shape = array(
-                    0, 0,
-                    0.5, 0,
-                    1, 0.5,
-                    0.5, 1,
-                    0, 1,
-                    0.5, 0.5
-                );
+                $shape = [0, 0, 0.5, 0, 1, 0.5, 0.5, 1, 0, 1, 0.5, 0.5];
                 break;
             case 8: // fish
-                $shape = array(
-                    0.5, 0,
-                    0.5, 0.5,
-                    1, 0.5,
-                    1, 1,
-                    0.5, 1,
-                    0.5, 0.5,
-                    0, 0.5
-                );
+                $shape = [0.5, 0, 0.5, 0.5, 1, 0.5, 1, 1, 0.5, 1, 0.5, 0.5, 0, 0.5];
                 break;
             case 9: // kite
-                $shape = array(
-                    0, 0,
-                    1, 0,
-                    0.5, 0.5,
-                    1, 0.5,
-                    0.5, 1,
-                    0.5, 0.5,
-                    0, 1
-                );
+                $shape = [0, 0, 1, 0, 0.5, 0.5, 1, 0.5, 0.5, 1, 0.5, 0.5, 0, 1];
                 break;
             case 10: // trough
-                $shape = array(
-                    0, 0.5,
-                    0.5, 1,
-                    1, 0.5,
-                    0.5, 0,
-                    1, 0,
-                    1, 1,
-                    0, 1
-                );
+                $shape = [0, 0.5, 0.5, 1, 1, 0.5, 0.5, 0, 1, 0, 1, 1, 0, 1];
                 break;
             case 11: // rays
-                $shape = array(
-                    0.5, 0,
-                    1, 0,
-                    1, 1,
-                    0.5, 1,
-                    1, 0.75,
-                    0.5, 0.5,
-                    1, 0.25
-                );
+                $shape = [0.5, 0, 1, 0, 1, 1, 0.5, 1, 1, 0.75, 0.5, 0.5, 1, 0.25];
                 break;
             case 12: // double rhombus
-                $shape = array(
-                    0, 0.5,
-                    0.5, 0,
-                    0.5, 0.5,
-                    1, 0,
-                    1, 0.5,
-                    0.5, 1,
-                    0.5, 0.5,
-                    0, 1
-                );
+                $shape = [0, 0.5, 0.5, 0, 0.5, 0.5, 1, 0, 1, 0.5, 0.5, 1, 0.5, 0.5, 0, 1];
                 break;
             case 13: // crown
-                $shape = array(
-                    0, 0,
-                    1, 0,
-                    1, 1,
-                    0, 1,
-                    1, 0.5,
-                    0.5, 0.25,
-                    0.5, 0.75,
-                    0, 0.5,
-                    0.5, 0.25
-                );
+                $shape = [0, 0, 1, 0, 1, 1, 0, 1, 1, 0.5, 0.5, 0.25, 0.5, 0.75, 0, 0.5, 0.5, 0.25];
                 break;
             case 14: // radioactive
-                $shape = array(
-                    0, 0.5,
-                    0.5, 0.5,
-                    0.5, 0,
-                    1, 0,
-                    0.5, 0.5,
-                    1, 0.5,
-                    0.5, 1,
-                    0.5, 0.5,
-                    0, 1
-                );
+                $shape = [0, 0.5, 0.5, 0.5, 0.5, 0, 1, 0, 0.5, 0.5, 1, 0.5, 0.5, 1, 0.5, 0.5, 0, 1];
                 break;
             default: // tiles
-                $shape = array(
-                    0, 0,
-                    1, 0,
-                    0.5, 0.5,
-                    0.5, 0,
-                    0, 0.5,
-                    1, 0.5,
-                    0.5, 1,
-                    0.5, 0.5,
-                    0, 1
-                );
+                $shape = [0, 0, 1, 0, 0.5, 0.5, 0.5, 0, 0, 0.5, 1, 0.5, 0.5, 1, 0.5, 0.5, 0, 1];
                 break;
         }
         $sprite->draw()->polygon($this->applyRatioToShapeCoordinates($shape, $this->settingsService->getDefaultIconSize()), $foregroundColor, true);
@@ -259,11 +162,11 @@ class DonParkGenerator extends AbstractGenerator
 
     /**
      * @param $shape
-     * @param Color $foregroundColor
-     * @param Color $backgroundColor
-     * @return \Imagine\Image\ImageInterface
+     * @param ColorInterface $foregroundColor
+     * @param ColorInterface $backgroundColor
+     * @return ImageInterface
      */
-    protected function getCenter($shape, Color $foregroundColor, Color $backgroundColor = null)
+    protected function getCenter($shape, ColorInterface $foregroundColor, ColorInterface $backgroundColor = null)
     {
         /* make sure there's enough contrast before we use background color of side sprite */
         if ($backgroundColor !== null) {
@@ -275,96 +178,28 @@ class DonParkGenerator extends AbstractGenerator
         $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize(), $backgroundColor);
         switch ($shape) {
             case 0: // empty
-                $shape = array();
+                $shape = [];
                 break;
             case 1: // fill
-                $shape = array(
-                    0, 0,
-                    1, 0,
-                    1, 1,
-                    0, 1
-                );
+                $shape = [0, 0, 1, 0, 1, 1, 0, 1];
                 break;
             case 2: // diamond
-                $shape = array(
-                    0.5, 0,
-                    1, 0.5,
-                    0.5, 1,
-                    0, 0.5
-                );
+                $shape = [0.5, 0, 1, 0.5, 0.5, 1, 0, 0.5];
                 break;
             case 3: // reverse diamond
-                $shape = array(
-                    0, 0,
-                    1, 0,
-                    1, 1,
-                    0, 1,
-                    0, 0.5,
-                    0.5, 1,
-                    1, 0.5,
-                    0.5, 0,
-                    0, 0.5
-                );
+                $shape = [0, 0, 1, 0, 1, 1, 0, 1, 0, 0.5, 0.5, 1, 1, 0.5, 0.5, 0, 0, 0.5];
                 break;
             case 4: // cross
-                $shape = array(
-                    0.25, 0,
-                    0.75, 0,
-                    0.5, 0.5,
-                    1, 0.25,
-                    1, 0.75,
-                    0.5, 0.5,
-                    0.75, 1,
-                    0.25, 1,
-                    0.5, 0.5,
-                    0, 0.75,
-                    0, 0.25,
-                    0.5, 0.5
-                );
+                $shape = [0.25, 0, 0.75, 0, 0.5, 0.5, 1, 0.25, 1, 0.75, 0.5, 0.5, 0.75, 1, 0.25, 1, 0.5, 0.5, 0, 0.75, 0, 0.25, 0.5, 0.5];
                 break;
             case 5: // morning star
-                $shape = array(
-                    0, 0,
-                    0.5, 0.25,
-                    1, 0,
-                    0.75, 0.5,
-                    1, 1,
-                    0.5, 0.75,
-                    0, 1,
-                    0.25, 0.5
-                );
+                $shape = [0, 0, 0.5, 0.25, 1, 0, 0.75, 0.5, 1, 1, 0.5, 0.75, 0, 1, 0.25, 0.5];
                 break;
             case 6: // small square
-                $shape = array(
-                    0.33, 0.33,
-                    0.67, 0.33,
-                    0.67, 0.67,
-                    0.33, 0.67
-                );
+                $shape = [0.33, 0.33, 0.67, 0.33, 0.67, 0.67, 0.33, 0.67];
                 break;
             case 7: // checkerboard
-                $shape = array(
-                    0, 0,
-                    0.33, 0,
-                    0.33, 0.33,
-                    0.66, 0.33,
-                    0.67, 0,
-                    1, 0,
-                    1, 0.33,
-                    0.67, 0.33,
-                    0.67, 0.67,
-                    1, 0.67,
-                    1, 1,
-                    0.67, 1,
-                    0.67, 0.67,
-                    0.33, 0.67,
-                    0.33, 1,
-                    0, 1,
-                    0, 0.67,
-                    0.33, 0.67,
-                    0.33, 0.33,
-                    0, 0.33
-                );
+                $shape = [0, 0, 0.33, 0, 0.33, 0.33, 0.66, 0.33, 0.67, 0, 1, 0, 1, 0.33, 0.67, 0.33, 0.67, 0.67, 1, 0.67, 1, 1, 0.67, 1, 0.67, 0.67, 0.33, 0.67, 0.33, 1, 0, 1, 0, 0.67, 0.33, 0.67, 0.33, 0.33, 0, 0.33];
                 break;
         }
         for ($i = 0; $i < count($shape); $i++) {
@@ -378,11 +213,12 @@ class DonParkGenerator extends AbstractGenerator
     }
 
     /**
-     * @param Color $foregroundColor
-     * @param Color $backgroundColor
-     * @return Color
+     * @param RGB $foregroundColor
+     * @param RGB $backgroundColor
+     * @return ColorInterface
+     * @throws Exception
      */
-    protected function generateBackgroundColorBasedOnContrast(Color $foregroundColor, Color $backgroundColor)
+    protected function generateBackgroundColorBasedOnContrast(RGB $foregroundColor, RGB $backgroundColor)
     {
         if (!(abs($foregroundColor->getRed() - $backgroundColor->getRed()) > 127 || abs($foregroundColor->getGreen() - $backgroundColor->getGreen()) > 127 || abs($foregroundColor->getBlue() - $backgroundColor->getBlue()) > 127)) {
             $backgroundColor = $this->backgroundColor;

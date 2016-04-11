@@ -13,11 +13,17 @@ namespace Ttree\Identicons\Generator;
 
 use Imagine\Filter\Basic\Rotate;
 use Imagine\Image\Box;
-use Imagine\Image\Color;
 use Imagine\Image\ImageInterface;
+use Imagine\Image\ManipulatorInterface;
+use Imagine\Image\Palette;
+use Imagine\Image\Palette\Color;
+use Imagine\Image\Palette\ColorParser;
 use Imagine\Image\Point;
+use Imagine\Imagick\Imagine;
+use Ttree\Identicons\Service\SettingsService;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Utility\Arrays;
+use TYPO3\Imagine\ImagineFactory;
 
 /**
  * Abstract Generator
@@ -27,24 +33,30 @@ use TYPO3\Flow\Utility\Arrays;
 abstract class AbstractGenerator implements GeneratorInterface
 {
     /**
-     * @var \Ttree\Identicons\Service\SettingsService
+     * @var SettingsService
      * @Flow\Inject
      */
     protected $settingsService;
 
     /**
-     * @var \Imagine\Imagick\Imagine
+     * @var array
+     * @Flow\InjectConfiguration(path="generator")
+     */
+    protected $configuration;
+
+    /**
+     * @var Imagine
      */
     protected $imagine;
 
     /**
-     * @var \TYPO3\Imagine\ImagineFactory
+     * @var ImagineFactory
      * @Flow\Inject
      */
     protected $imagineFactory;
 
     /**
-     * @var \Imagine\Image\Color
+     * @var Color\RGB
      */
     protected $backgroundColor;
 
@@ -53,31 +65,35 @@ abstract class AbstractGenerator implements GeneratorInterface
      */
     public function initializeObject()
     {
-        $this->imagine         = $this->imagineFactory->create();
-        $this->backgroundColor = new \Imagine\Image\Color($this->settingsService->get('backgroundColor'));
+        $this->imagine = $this->imagineFactory->create();
+        $parser = new ColorParser();
+        $backgroundConfiguration = $this->settingsService->get('background');
+        $color = $parser->parseToRGB($backgroundConfiguration['color']);
+        $palette = new Palette\RGB();
+        $this->backgroundColor = new Color\RGB($palette, $color, $backgroundConfiguration['opacity']);
     }
 
     /**
      * @param int $width
      * @param int $height
-     * @param \Imagine\Image\Color $backgroundColor
-     * @return \Imagine\Image\ImageInterface
+     * @param Color\ColorInterface $backgroundColor
+     * @return ImageInterface
      */
-    protected function createImage($width, $height, Color $backgroundColor = null)
+    protected function createImage($width, $height, Color\ColorInterface $backgroundColor = null)
     {
-        return $this->imagine->create(new \Imagine\Image\Box($width, $height), $backgroundColor ? : $this->backgroundColor);
+        return $this->imagine->create(new Box($width, $height), $backgroundColor ?: $this->backgroundColor);
     }
 
     /**
-     * @param \Imagine\Image\ImageInterface $sprite
-     * @param null $rotation
-     * @return \Imagine\Image\ImageInterface
+     * @param ImageInterface $sprite
+     * @param integer $rotation
+     * @return ImageInterface
      */
-    protected function rotate(\Imagine\Image\ImageInterface $sprite, $rotation = null)
+    protected function rotate(ImageInterface $sprite, $rotation = null)
     {
         if ($rotation !== null) {
             $rotation = new Rotate($rotation, $this->backgroundColor);
-            $sprite   = $rotation->apply($sprite);
+            $sprite = $rotation->apply($sprite);
         }
 
         return $sprite;
@@ -85,7 +101,7 @@ abstract class AbstractGenerator implements GeneratorInterface
 
     /**
      * @param array $shape
-     * @param int $size
+     * @param integer $size
      * @throws \Exception
      * @return array
      */
@@ -95,10 +111,10 @@ abstract class AbstractGenerator implements GeneratorInterface
         if ($count % 2 !== 0) {
             throw new \Exception('Invalid number of coordinate', 1376757994);
         }
-        $coordinates = array();
+        $coordinates = [];
         for ($i = 0; $i < $count / 2; $i++) {
             //$shape[$i] = $shape[$i] * $this->settingsService->getDefaultIconSize();
-            $coordinate    = array_slice($shape, $i * 2, 2);
+            $coordinate = array_slice($shape, $i * 2, 2);
             $coordinates[] = new Point($coordinate[0] * $size, $coordinate[1] * $size);
         }
 
@@ -107,14 +123,42 @@ abstract class AbstractGenerator implements GeneratorInterface
 
     /**
      * @param ImageInterface $image
-     * @param int $padding
-     * @return \Imagine\Image\ManipulatorInterface
+     * @param integer $padding
+     * @return ManipulatorInterface
      */
     protected function pad(ImageInterface $image, $padding)
     {
-        $size    = $image->getSize();
+        $size = $image->getSize();
         $resized = $this->createImage($size->getWidth() + $padding, $size->getHeight() + $padding);
 
         return $resized->paste($image, new Point($padding / 2, $padding / 2))->resize(new Box($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize()));
     }
+
+    /**
+     * @param array $shapes
+     * @param integer $shape
+     * @param array $defaultShape
+     * @return array
+     */
+    protected function selectShape(array $shapes, $shape, array $defaultShape)
+    {
+        $key = $shape - 1;
+        if (isset($shapes[$key])) {
+            $shape = $shapes[$key];
+        } else {
+            $shape = [1, 1];
+        }
+        return $shape;
+    }
+
+    /**
+     * @param string $path
+     * @return mixed
+     */
+    protected function getConfigurationPath($path)
+    {
+        $generatorConfiguration = Arrays::getValueByPath($this->configuration, get_called_class());
+        return Arrays::getValueByPath($generatorConfiguration, $path);
+    }
+
 }

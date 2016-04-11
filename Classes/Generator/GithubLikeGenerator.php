@@ -13,8 +13,9 @@ namespace Ttree\Identicons\Generator;
 
 use Imagine\Filter\Basic\FlipHorizontally;
 use Imagine\Image\Box;
-use Imagine\Image\Color;
 use Imagine\Image\ImageInterface;
+use Imagine\Image\Palette;
+use Imagine\Image\Palette\Color\RGB;
 use Imagine\Image\Point;
 use TYPO3\Flow\Annotations as Flow;
 
@@ -27,7 +28,7 @@ use TYPO3\Flow\Annotations as Flow;
 class GithubLikeGenerator extends AbstractGenerator
 {
     /**
-     * @var \Imagine\Image\Color
+     * @var RGB
      */
     protected $foregroundColor;
 
@@ -36,14 +37,14 @@ class GithubLikeGenerator extends AbstractGenerator
      */
     public function generate($hash, $size = null)
     {
-        $size = $size ? : $this->settingsService->getDefaultIconSize();
+        $size = $size ?: $this->settingsService->getDefaultIconSize();
 
-        $topCornerSpriteShape    = hexdec(substr($hash, 0, 1));
+        $topCornerSpriteShape = hexdec(substr($hash, 0, 1));
         $bottomCornerSpriteShape = hexdec(substr($hash, 1, 1));
-        $topMiddleSpriteShape      = hexdec(substr($hash, 2, 1)) & 2;
-        $middleSideSpriteShape   = hexdec(substr($hash, 3, 1)) & 2;
-        $centerSpriteShape       = hexdec(substr($hash, 4, 1)) & 2;
-        $bottomSpriteShape       = hexdec(substr($hash, 5, 1)) & 7;
+        $topMiddleSpriteShape = hexdec(substr($hash, 2, 1)) & 2;
+        $middleSideSpriteShape = hexdec(substr($hash, 3, 1)) & 2;
+        $centerSpriteShape = hexdec(substr($hash, 4, 1)) & 2;
+        $bottomSpriteShape = hexdec(substr($hash, 5, 1)) & 7;
 
         $this->generateForegroundColor($hash);
 
@@ -72,10 +73,12 @@ class GithubLikeGenerator extends AbstractGenerator
         $centerSprite = $this->getCenter($centerSpriteShape);
         $identicon->paste($centerSprite, new Point($size, $size));
 
-        $size    = $identicon->getSize();
+        $size = $identicon->getSize();
         $padding = $this->settingsService->getDefaultIconSize() / 2;
         $resized = $this->createImage($size->getWidth() + $padding, $size->getHeight() + $padding);
-        $resized->paste($identicon, new Point($padding / 2, $padding / 2))->resize(new Box($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize()));
+        $resized
+            ->paste($identicon, new Point($padding / 2, $padding / 2))
+            ->resize(new Box($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize()));
 
         return $this->pad($identicon, $this->settingsService->getDefaultIconSize() / 2);
     }
@@ -85,104 +88,28 @@ class GithubLikeGenerator extends AbstractGenerator
      */
     protected function generateForegroundColor($hash)
     {
-        $this->foregroundColor = new Color(array(
+        $palette = new Palette\RGB();
+        $this->foregroundColor = new RGB($palette, [
             hexdec(substr($hash, 6, 2)),
             hexdec(substr($hash, 8, 2)),
             hexdec(substr($hash, 10, 2))
-        ));
+        ], 100);
     }
 
 
     /**
      * @param int $shape
      * @param float $rotation
-     * @return \Imagine\Image\ImageInterface
+     * @return ImageInterface
      * @throws \Exception
      */
     protected function getSquareSprite($shape, $rotation = null)
     {
         $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize());
-        switch ($shape) {
-            case 1:
-                $shape = array(
-                    0, 0,
-                    1, 1
-                );
-                break;
-            case 2:
-                $shape = array(
-                    0, 1,
-                    1, 1
-                );
-                break;
-            case 3:
-                $shape = array(
-                    0, 1,
-                    0, 1
-                );
-                break;
-            case 4:
-                $shape = array(
-                    1, 1,
-                    0, 0
-                );
-                break;
-            case 5:
-                $shape = array(
-                    1, 1,
-                    1, 0
-                );
-                break;
-            case 6:
-                $shape = array(
-                    1, 0,
-                    1, 1
-                );
-                break;
-            case 7:
-                $shape = array(
-                    1, 0,
-                    0, 1
-                );
-                break;
-            case 8:
-                $shape = array(
-                    0, 1,
-                    1, 0
-                );
-                break;
-            case 9:
-                $shape = array(
-                    0, 1,
-                    0, 0
-                );
-                break;
-            case 10:
-                $shape = array(
-                    1, 0,
-                    0, 0
-                );
-                break;
-            case 11:
-                $shape = array(
-                    1, 0,
-                    1, 0
-                );
-                break;
-            case 12:
-                $shape = array(
-                    1, 1,
-                    0, 1
-                );
-                break;
-            default:
-                $shape = array(
-                    0, 0,
-                    0, 1
-                );
-                break;
-        }
-        $size   = $sprite->getSize();
+
+        $shape = $this->selectShape($this->getConfigurationPath('squareSprite.shapes'), $shape, $this->getConfigurationPath('squareSprite.default'));
+
+        $size = $sprite->getSize();
         $square = $this->createImage(0.5 * $this->settingsService->getDefaultIconSize(), 0.5 * $this->settingsService->getDefaultIconSize(), $this->foregroundColor);
         for ($i = 0; $i < count($shape); $i++) {
             if ($shape[$i] === 0) {
@@ -217,47 +144,16 @@ class GithubLikeGenerator extends AbstractGenerator
     /**
      * @param int $shape
      * @param float $rotation
-     * @return \Imagine\Image\ImageInterface
+     * @return ImageInterface
      * @throws \Exception
      */
     protected function getRectangularSprite($shape, $rotation = null)
     {
         $sprite = $this->createImage($this->settingsService->getDefaultIconSize(), $this->settingsService->getDefaultIconSize() / 2);
 
-        switch ($shape) {
-            case 1:
-                $shape = array(
-                    0,
-                    0
-                );
-                break;
-            case 2:
-                $shape = array(
-                    1,
-                    1
-                );
-                break;
-            case 3:
-                $shape = array(
-                    0,
-                    1
-                );
-                break;
-            case 4:
-                $shape = array(
-                    1,
-                    0
-                );
-                break;
-            default:
-                $shape = array(
-                    1,
-                    1
-                );
-                break;
-        }
+        $shape = $this->selectShape($this->getConfigurationPath('rectangularSprite.shapes'), $shape, $this->getConfigurationPath('rectangularSprite.default'));
 
-        $size   = $sprite->getSize();
+        $size = $sprite->getSize();
         $square = $this->createImage(0.5 * $this->settingsService->getDefaultIconSize(), 0.5 * $this->settingsService->getDefaultIconSize(), $this->foregroundColor);
         for ($i = 0; $i < count($shape); $i++) {
             if ($shape[$i] === 0) {
@@ -284,8 +180,8 @@ class GithubLikeGenerator extends AbstractGenerator
     }
 
     /**
-     * @param int $shape
-     * @return \Imagine\Image\ImageInterface
+     * @param integer $shape
+     * @return ImageInterface
      */
     protected function getCenter($shape)
     {

@@ -12,10 +12,36 @@ Ttree:
   Identicons:
     persist: TRUE
     size: 420
-    backgroundColor: '#EEE'
+    background:
+      color: '#FFF'
+      opacity: 100
     ttl: 2592000
     access:
       enable: FALSE
     flood:
       enable: TRUE
       limit: 30
+    generator:
+      'Ttree\Identicons\Generator\GithubLikeGenerator':
+        squareSprite:
+          default: [0, 0, 0, 1]
+          shapes:
+            - [0, 0, 1, 1]
+            - [0, 1, 1, 1]
+            - [0, 1, 0, 1]
+            - [1, 1, 0, 0]
+            - [1, 1, 1, 0]
+            - [1, 0, 1, 1]
+            - [1, 0, 0, 1]
+            - [0, 1, 1, 0]
+            - [0, 1, 0, 0]
+            - [1, 0, 0, 0]
+            - [1, 0, 1, 0]
+            - [1, 1, 0, 1]
+        rectangularSprite:
+          default: [1, 1]
+          shapes:
+            - [0, 0]
+            - [1, 1]
+            - [0, 1]
+            - [1, 0]
