@@ -14,7 +14,6 @@ namespace Ttree\Identicons\Domain\Model;
 use Doctrine\ORM\Mapping as ORM;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Utility\Unicode\Functions;
-use TYPO3\Media\Domain\Model\Image;
 
 /**
  * Identicon Hash

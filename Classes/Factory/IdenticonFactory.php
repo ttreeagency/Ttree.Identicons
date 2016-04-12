@@ -12,16 +12,11 @@ namespace Ttree\Identicons\Factory;
  *                                                                        */
 
 use Doctrine\ORM\Mapping as ORM;
-use Ttree\Identicons\Domain\Model\Identicon;
+use Imagine\Image\ImageInterface;
 use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
-use Ttree\Identicons\Domain\Repository\IdenticonRepository;
 use Ttree\Identicons\Generator\GeneratorInterface;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Cache\Frontend\VariableFrontend;
-use TYPO3\Flow\Persistence\PersistenceManagerInterface;
-use TYPO3\Flow\Resource\ResourceManager;
-use TYPO3\Media\Domain\Model\Image;
-use TYPO3\Media\Domain\Repository\ImageRepository;
 
 /**
  * Identicon Factory
@@ -35,30 +30,6 @@ class IdenticonFactory
      * @Flow\Inject
      */
     protected $identiconGenerator;
-
-    /**
-     * @var ResourceManager
-     * @Flow\Inject
-     */
-    protected $resourceManager;
-
-    /**
-     * @var ImageRepository
-     * @Flow\Inject
-     */
-    protected $imageRepository;
-
-    /**
-     * @var IdenticonRepository
-     * @Flow\Inject
-     */
-    protected $identiconRepository;
-
-    /**
-     * @var PersistenceManagerInterface
-     * @Flow\Inject
-     */
-    protected $persistenceManager;
 
     /**
      * @var boolean
@@ -78,55 +49,33 @@ class IdenticonFactory
      */
     public function create(IdenticonConfiguration $hash)
     {
-        if ($this->cache->has((string)$hash)) {
+        if ($this->cache->has((string)$hash) && $this->persistenceEnabled) {
             return $this->cache->get((string)$hash);
         }
-        $identicon = $this->identiconRepository->findByIdentifier($hash);
-        if ($identicon === null) {
-            $identicon = new Identicon($this->createImageFromService($hash), $hash);
-            if ($this->persistenceEnabled === true) {
-                $this->identiconRepository->add($identicon);
-                $this->persistenceManager->persistAll();
-            }
-            $this->emitIdenticonCreated($identicon, $hash);
-        }
+        $identicon = $this->identiconGenerator->generate($hash);
+        $this->emitIdenticonCreated($identicon, $hash);
 
-        $image = $identicon->render();
-        $this->cache->set((string)$hash, $image);
-        return $image;
-    }
-
-    /**
-     * @param IdenticonConfiguration $hash
-     * @return Image
-     */
-    protected function createImageFromService(IdenticonConfiguration $hash)
-    {
-        $image = $this->identiconGenerator->generate($hash);
-        ob_start();
-        $image->show('png', [
+        $image = $identicon->get('png', [
             'png_compression_level' => 6,
             'png_compression_filter' => 5,
             'flatten' => true,
             'filter' => PNG_ALL_FILTERS
         ]);
-        $content = ob_get_contents();
-        ob_clean();
-
-        $resource = $this->resourceManager->importResourceFromContent($content, $hash . '.png');
-
-        return new Image($resource);
+        if ($this->persistenceEnabled) {
+            $this->cache->set((string)$hash, $image);
+        }
+        return $image;
     }
 
     /**
      * Emits a signal when an Identicon is created
      *
-     * @param Identicon $identicon
+     * @param ImageInterface $identicon
      * @param IdenticonConfiguration $hash
      * @return void
      * @Flow\Signal
      */
-    protected function emitIdenticonCreated(Identicon $identicon, IdenticonConfiguration $hash) {
+    protected function emitIdenticonCreated(ImageInterface $identicon, IdenticonConfiguration $hash) {
 
     }
 }
