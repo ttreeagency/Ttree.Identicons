@@ -68,13 +68,20 @@ abstract class AbstractGenerator implements GeneratorInterface
     protected $defaultSize;
 
     /**
+     * @var array
+     * @Flow\InjectConfiguration(path="size")
+     */
+    protected $sizeContraints;
+
+    /**
      * {@inheritdoc}
      */
     public function generate(IdenticonConfiguration $hash)
     {
         $this->defaultSize = $hash->getSize() ?: $this->settingsService->getDefaultIconSize();
-        if ($this->defaultSize < 32 || $this->defaultSize > 2048) {
-            throw new Exception('Icon size is limited between 32 and 2048', 1460367015);
+        list($minimumSize, $maximumSize) = array_values($this->sizeContraints);
+        if ($this->defaultSize < $minimumSize || $this->defaultSize > $maximumSize) {
+            throw new Exception(sprintf('Icon size is limited between %d and %d', $minimumSize, $maximumSize), 1460367015);
         }
     }
 

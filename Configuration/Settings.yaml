@@ -11,7 +11,6 @@ TYPO3:
 Ttree:
   Identicons:
     persist: TRUE
-    size: 420
     background:
       color: '#FFF'
       opacity: 100
@@ -21,6 +20,10 @@ Ttree:
     flood:
       enable: TRUE
       limit: 30
+    size:
+      minumum: 32
+      maximum: 2048
+      default: 420
     generator:
       'Ttree\Identicons\Generator\DonParkGenerator':
         sprite:

@@ -55,6 +55,6 @@ class SettingsService
      */
     public function getDefaultIconSize()
     {
-        return (int)$this->get('size') ? : 420;
+        return (int)$this->get('size.default') ?: 420;
     }
 }
