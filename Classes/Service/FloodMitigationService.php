@@ -13,7 +13,6 @@ namespace Ttree\Identicons\Service;
 
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Cache\Frontend\VariableFrontend;
-use TYPO3\Flow\Mvc\ActionRequest;
 use TYPO3\Flow\Security\Exception\AccessDeniedException;
 use TYPO3\Flow\Utility\Now;
 

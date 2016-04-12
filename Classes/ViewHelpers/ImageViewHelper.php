@@ -11,7 +11,6 @@ namespace Ttree\Identicons\ViewHelpers;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
-use Ttree\Identicons\Factory\IdenticonFactory;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Media\Domain\Model\ImageInterface;
 
