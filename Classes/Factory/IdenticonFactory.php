@@ -16,11 +16,10 @@ use Ttree\Identicons\Domain\Model\Identicon;
 use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
 use Ttree\Identicons\Domain\Repository\IdenticonRepository;
 use Ttree\Identicons\Generator\GeneratorInterface;
-use Ttree\Identicons\Service\SettingsService;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Cache\Frontend\VariableFrontend;
 use TYPO3\Flow\Persistence\PersistenceManagerInterface;
 use TYPO3\Flow\Resource\ResourceManager;
-use TYPO3\Flow\Utility\Unicode\Functions;
 use TYPO3\Media\Domain\Model\Image;
 use TYPO3\Media\Domain\Repository\ImageRepository;
 
@@ -62,27 +61,38 @@ class IdenticonFactory
     protected $persistenceManager;
 
     /**
-     * @var SettingsService
+     * @var boolean
+     * @Flow\InjectConfiguration(path="persist")
+     */
+    protected $persistenceEnabled;
+
+    /**
+     * @var VariableFrontend
      * @Flow\Inject
      */
-    protected $settingsService;
+    protected $cache;
 
     /**
      * @param IdenticonConfiguration $hash
-     * @return Identicon
+     * @return string
      */
     public function create(IdenticonConfiguration $hash)
     {
+        if ($this->cache->has((string)$hash)) {
+            return $this->cache->get((string)$hash);
+        }
         $identicon = $this->identiconRepository->findByIdentifier($hash);
         if ($identicon === null) {
             $identicon = new Identicon($this->createImageFromService($hash), $hash);
-            if ($this->settingsService->get('persist') === true) {
+            if ($this->persistenceEnabled === true) {
                 $this->identiconRepository->add($identicon);
                 $this->persistenceManager->persistAll();
             }
         }
 
-        return $identicon;
+        $image = $identicon->render();
+        $this->cache->set((string)$hash, $image);
+        return $image;
     }
 
     /**

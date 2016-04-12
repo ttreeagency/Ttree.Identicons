@@ -53,8 +53,8 @@ class IdenticonsController extends ActionController
         $this->response->setHeader('Expires', date(DATE_RFC1123, time()+$ttl));
 
         $hash = IdenticonConfiguration::create($hash, $s ?: $this->settingsService->getDefaultIconSize());
-        $identicon = $this->identiconFactory->create($hash);
+        $image = $this->identiconFactory->create($hash);
 
-        return $identicon->render();
+        return $image;
     }
 }
