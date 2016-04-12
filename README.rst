@@ -23,7 +23,9 @@ Installation
 		IdenticonsSubroutes:
 		  package: Ttree.Identicons
 
-3. Go to www.yourdomain/i/[yourhash].png (replace [yourhash] by any string)
+3. Configure Imagine to use the ```Imagick``` drive. *GD driver generate bad artifacts*.
+
+4. Go to www.yourdomain/i/[yourhash].png (replace [yourhash] by any string)
 
 This package is available on Packagist.org: https://packagist.org/packages/ttree/identicons
 
