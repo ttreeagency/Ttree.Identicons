@@ -23,6 +23,8 @@ Installation
 		IdenticonsSubroutes:
 		  package: Ttree.Identicons
 
+If you change the ```uriPattern```, please read the section **Flood Mitigation**.
+
 3. Configure Imagine to use the ```Imagick``` drive. *GD driver generate bad artifacts*.
 
 4. Go to www.yourdomain/i/[yourhash].png (replace [yourhash] by any string)
@@ -50,6 +52,13 @@ Settings
 +--------------------+----------------------------------------+-------------------------+
 | access.enable      | Enable advanced access limitation      | FALSE                   |
 +--------------------+----------------------------------------+-------------------------+
+
+=================
+Request Arguments
+=================
+
+- ```s```: The size of the image, between 32 and 2048 pixels, (default: 420px)
+- ```b```: The background color (default: transparent)
 
 ================
 Flood Mitigation
