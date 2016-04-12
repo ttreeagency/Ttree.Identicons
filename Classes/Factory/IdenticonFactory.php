@@ -88,6 +88,7 @@ class IdenticonFactory
                 $this->identiconRepository->add($identicon);
                 $this->persistenceManager->persistAll();
             }
+            $this->emitIdenticonCreated($identicon, $hash);
         }
 
         $image = $identicon->render();
@@ -113,5 +114,17 @@ class IdenticonFactory
         $resource = $this->resourceManager->importResourceFromContent($content, $hash . '.png');
 
         return new Image($resource);
+    }
+
+    /**
+     * Emits a signal when an Identicon is created
+     *
+     * @param Identicon $identicon
+     * @param IdenticonConfiguration $hash
+     * @return void
+     * @Flow\Signal
+     */
+    protected function emitIdenticonCreated(Identicon $identicon, IdenticonConfiguration $hash) {
+
     }
 }
