@@ -105,7 +105,9 @@ class IdenticonFactory
         $image = $this->identiconGenerator->generate($hash);
         ob_start();
         $image->show('png', [
-            'quality' => 9,
+            'png_compression_level' => 6,
+            'png_compression_filter' => 5,
+            'flatten' => true,
             'filter' => PNG_ALL_FILTERS
         ]);
         $content = ob_get_contents();
