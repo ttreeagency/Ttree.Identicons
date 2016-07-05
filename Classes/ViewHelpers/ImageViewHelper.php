@@ -62,12 +62,10 @@ class ImageViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractTagBasedViewH
     {
         $identicon = $this->identiconFactory->create(new IdenticonConfiguration($hash, $size));
 
-        $thumbnailImage = $this->getThumbnailImage($identicon->getImage(), $size);
-
         $this->tag->addAttributes(array(
-            'width' => $thumbnailImage->getWidth(),
-            'height' => $thumbnailImage->getHeight(),
-            'src' => $this->resourceManager->getPublicPersistentResourceUri($thumbnailImage->getResource()),
+            'width' => $size,
+            'height' => $size,
+            'src' => 'data:image/png;base64,' . base64_encode($identicon),
         ));
 
         return $this->tag->render();
