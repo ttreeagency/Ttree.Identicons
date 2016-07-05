@@ -11,7 +11,10 @@ namespace Ttree\Identicons\ViewHelpers;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
+use Ttree\Identicons\Factory\IdenticonFactory;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Resource\ResourceManager;
 use TYPO3\Media\Domain\Model\ImageInterface;
 
 /**
@@ -28,10 +31,10 @@ class ImageViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractTagBasedViewH
     protected $identiconFactory;
 
     /**
-     * @var \TYPO3\Flow\Resource\Publishing\ResourcePublisher
      * @Flow\Inject
+     * @var ResourceManager
      */
-    protected $resourcePublisher;
+    protected $resourceManager;
 
     /**
      * name of the tag to be created by this view helper
@@ -64,7 +67,7 @@ class ImageViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractTagBasedViewH
         $this->tag->addAttributes(array(
             'width' => $thumbnailImage->getWidth(),
             'height' => $thumbnailImage->getHeight(),
-            'src' => $this->resourcePublisher->getPersistentResourceWebUri($thumbnailImage->getResource()),
+            'src' => $this->resourceManager->getPublicPersistentResourceUri($thumbnailImage->getResource()),
         ));
 
         return $this->tag->render();
