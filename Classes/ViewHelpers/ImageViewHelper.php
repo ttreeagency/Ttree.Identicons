@@ -57,7 +57,7 @@ class ImageViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractTagBasedViewH
      */
     public function render($hash, $size = null)
     {
-        $identicon = $this->identiconFactory->create($hash);
+        $identicon = $this->identiconFactory->create(new IdenticonConfiguration($hash, $size));
 
         $thumbnailImage = $this->getThumbnailImage($identicon->getImage(), $size);
 
