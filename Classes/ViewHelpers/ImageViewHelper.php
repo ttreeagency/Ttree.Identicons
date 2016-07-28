@@ -11,7 +11,10 @@ namespace Ttree\Identicons\ViewHelpers;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
+use Ttree\Identicons\Factory\IdenticonFactory;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Resource\ResourceManager;
 use TYPO3\Media\Domain\Model\ImageInterface;
 
 /**
@@ -28,10 +31,10 @@ class ImageViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractTagBasedViewH
     protected $identiconFactory;
 
     /**
-     * @var \TYPO3\Flow\Resource\Publishing\ResourcePublisher
      * @Flow\Inject
+     * @var ResourceManager
      */
-    protected $resourcePublisher;
+    protected $resourceManager;
 
     /**
      * name of the tag to be created by this view helper
@@ -57,14 +60,12 @@ class ImageViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractTagBasedViewH
      */
     public function render($hash, $size = null)
     {
-        $identicon = $this->identiconFactory->create($hash);
-
-        $thumbnailImage = $this->getThumbnailImage($identicon->getImage(), $size);
+        $identicon = $this->identiconFactory->create(new IdenticonConfiguration($hash, $size));
 
         $this->tag->addAttributes(array(
-            'width' => $thumbnailImage->getWidth(),
-            'height' => $thumbnailImage->getHeight(),
-            'src' => $this->resourcePublisher->getPersistentResourceWebUri($thumbnailImage->getResource()),
+            'width' => $size,
+            'height' => $size,
+            'src' => 'data:image/png;base64,' . base64_encode($identicon),
         ));
 
         return $this->tag->render();
