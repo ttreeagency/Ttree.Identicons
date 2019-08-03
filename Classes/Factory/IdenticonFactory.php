@@ -6,7 +6,7 @@ use Imagine\Image\ImageInterface;
 use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
 use Ttree\Identicons\Generator\GeneratorInterface;
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Cache\Frontend\VariableFrontend;
+use Neos\Cache\Frontend\VariableFrontend;
 
 /**
  * Identicon Factory

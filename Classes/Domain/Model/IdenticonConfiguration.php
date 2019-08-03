@@ -3,7 +3,7 @@ namespace Ttree\Identicons\Domain\Model;
 
 use Doctrine\ORM\Mapping as ORM;
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Utility\Unicode\Functions;
+use Neos\Utility\Unicode\Functions;
 
 /**
  * Identicon Hash

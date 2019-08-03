@@ -14,7 +14,7 @@ use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
 use Ttree\Identicons\Service\SettingsService;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Exception;
-use Neos\Flow\Utility\Arrays;
+use Neos\Utility\Arrays;
 use Neos\Imagine\ImagineFactory;
 
 /**
