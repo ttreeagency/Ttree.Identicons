@@ -1,16 +1,6 @@
 <?php
 namespace Ttree\Identicons\Generator;
 
-/*                                                                        *
- * This script belongs to the TYPO3 Flow package "Ttree.Identicons".      *
- *                                                                        *
- * It is free software; you can redistribute it and/or modify it under    *
- * the terms of the GNU General Public License, either version 3 of the   *
- * License, or (at your option) any later version.                        *
- *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
- *                                                                        */
-
 use Imagine\Filter\Basic\Rotate;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
@@ -22,10 +12,10 @@ use Imagine\Image\Point;
 use Imagine\Imagick\Imagine;
 use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
 use Ttree\Identicons\Service\SettingsService;
-use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Exception;
-use TYPO3\Flow\Utility\Arrays;
-use TYPO3\Imagine\ImagineFactory;
+use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Exception;
+use Neos\Flow\Utility\Arrays;
+use Neos\Imagine\ImagineFactory;
 
 /**
  * Abstract Generator

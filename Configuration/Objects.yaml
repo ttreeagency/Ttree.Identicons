@@ -2,7 +2,7 @@ Ttree\Identicons\Service\FloodMitigationService:
   properties:
     cache:
       object:
-        factoryObjectName: TYPO3\Flow\Cache\CacheManager
+        factoryObjectName: Neos\Flow\Cache\CacheManager
         factoryMethodName: getCache
         arguments:
           1:
@@ -12,7 +12,7 @@ Ttree\Identicons\Factory\IdenticonFactory:
   properties:
     cache:
       object:
-        factoryObjectName: TYPO3\Flow\Cache\CacheManager
+        factoryObjectName: Neos\Flow\Cache\CacheManager
         factoryMethodName: getCache
         arguments:
           1:

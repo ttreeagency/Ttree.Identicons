@@ -1,31 +1,22 @@
 <?php
 namespace Ttree\Identicons\ViewHelpers;
 
-/*                                                                        *
- * This script belongs to the TYPO3 Flow package "Ttree.Identicons".      *
- *                                                                        *
- * It is free software; you can redistribute it and/or modify it under    *
- * the terms of the GNU General Public License, either version 3 of the   *
- * License, or (at your option) any later version.                        *
- *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
- *                                                                        */
-
+use Neos\Flow\ResourceManagement\ResourceManager;
+use Neos\FluidAdaptor\Core\ViewHelper\AbstractTagBasedViewHelper;
 use Ttree\Identicons\Domain\Model\IdenticonConfiguration;
+use Neos\Flow\Annotations as Flow;
+use Neos\Media\Domain\Model\ImageInterface;
 use Ttree\Identicons\Factory\IdenticonFactory;
-use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Resource\ResourceManager;
-use TYPO3\Media\Domain\Model\ImageInterface;
 
 /**
  * Render an identicon image
  *
  * @package Ttree\Identicons\ViewHelpers
  */
-class ImageViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper
+class ImageViewHelper extends AbstractTagBasedViewHelper
 {
     /**
-     * @var \Ttree\Identicons\Factory\IdenticonFactory
+     * @var IdenticonFactory
      * @Flow\Inject
      */
     protected $identiconFactory;
@@ -75,9 +66,9 @@ class ImageViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractTagBasedViewH
      * Calculates the dimensions of the thumbnail to be generated and returns the thumbnail image if the new dimensions
      * differ from the specified image dimensions, otherwise the original image is returned.
      *
-     * @param \TYPO3\Media\Domain\Model\ImageInterface $image
+     * @param \Neos\Media\Domain\Model\ImageInterface $image
      * @param integer $size
-     * @return \TYPO3\Media\Domain\Model\ImageInterface
+     * @return \Neos\Media\Domain\Model\ImageInterface
      *
      */
     protected function getThumbnailImage(ImageInterface $image, $size)

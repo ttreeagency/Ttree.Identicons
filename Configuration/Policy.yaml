@@ -1,13 +1,13 @@
 privilegeTargets:
 
-  'TYPO3\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+  'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
 
     'Ttree.Identicons:Controller':
       matcher: method(Ttree\Identicons\Controller\IdenticonsController->generateAction())
 
 roles:
 
-  'TYPO3.Flow:Everybody':
+  'Neos.Flow:Everybody':
     privileges:
       -
         privilegeTarget: 'Ttree.Identicons:Controller'

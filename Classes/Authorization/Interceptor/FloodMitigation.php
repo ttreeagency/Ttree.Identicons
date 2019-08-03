@@ -1,22 +1,12 @@
 <?php
 namespace Ttree\Identicons\Authorization\Interceptor;
 
-/*                                                                        *
- * This script belongs to the TYPO3 Flow package "Ttree.Identicons".      *
- *                                                                        *
- * It is free software; you can redistribute it and/or modify it under    *
- * the terms of the GNU General Public License, either version 3 of the   *
- * License, or (at your option) any later version.                        *
- *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
- *                                                                        */
-
 use Ttree\Identicons\Service\FloodMitigationService;
-use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Core\Bootstrap;
-use TYPO3\Flow\Http\Request;
-use TYPO3\Flow\Security\Authorization\InterceptorInterface;
-use TYPO3\Flow\Security\Exception\AccessDeniedException;
+use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Core\Bootstrap;
+use Neos\Flow\Http\Request;
+use Neos\Flow\Security\Authorization\InterceptorInterface;
+use Neos\Flow\Security\Exception\AccessDeniedException;
 
 /**
  * Flood Mitigation
