@@ -1,15 +1,17 @@
 {
     "name": "ttree/identicons",
-    "type": "typo3-flow-package",
-    "description": "Flow package to generate identicons",
+    "type": "neos-package",
+    "description": "Neos Flow package to generate identicons, based on Github or DonPark styles.",
     "keywords": [
         "neos",
-        "identicons"
+        "identicons",
+        "github",
+        "donpark"
     ],
     "license": "MIT",
     "require": {
-        "typo3/flow": ">=3.0",
-        "typo3/imagine": ">=2.0"
+        "neos/flow": "^5.0",
+        "neos/imagine": "^3.0"
     },
     "autoload": {
         "psr-4": {

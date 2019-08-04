@@ -13,8 +13,8 @@ use Neos\Flow\Annotations as Flow;
 interface GeneratorInterface
 {
     /**
-     * @param IdenticonConfiguration $hash
+     * @param IdenticonConfiguration $configuration
      * @return ImageInterface
      */
-    public function generate(IdenticonConfiguration $hash);
+    public function generate(IdenticonConfiguration $configuration);
 }

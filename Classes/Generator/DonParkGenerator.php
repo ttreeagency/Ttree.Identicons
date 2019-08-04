@@ -22,40 +22,40 @@ class DonParkGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(IdenticonConfiguration $hash)
+    public function generate(IdenticonConfiguration $configuration)
     {
-        parent::generate($hash);
+        parent::generate($configuration);
 
         $size = $this->defaultSize;
-        $hash = $hash->getOriginalHash();
+        $configuration = $configuration->getOriginalHash();
 
-        $cornerSpriteShape = hexdec(substr($hash, 0, 1));
-        $sideSpriteShape = hexdec(substr($hash, 1, 1));
-        $centerSpriteShape = hexdec(substr($hash, 2, 1)) & 7;
+        $cornerSpriteShape = hexdec(substr($configuration, 0, 1));
+        $sideSpriteShape = hexdec(substr($configuration, 1, 1));
+        $centerSpriteShape = hexdec(substr($configuration, 2, 1)) & 7;
 
-        $cornerSpriteRotation = hexdec(substr($hash, 3, 1)) & 3;
-        $sideSpriteRotation = hexdec(substr($hash, 4, 1)) & 3;
+        $cornerSpriteRotation = hexdec(substr($configuration, 3, 1)) & 3;
+        $sideSpriteRotation = hexdec(substr($configuration, 4, 1)) & 3;
 
         $palette = new Palette\RGB();
         $cornerSpriteForegroundColor = new RGB($palette, [
-            hexdec(substr($hash, 6, 2)),
-            hexdec(substr($hash, 8, 2)),
-            hexdec(substr($hash, 10, 2))
+            hexdec(substr($configuration, 6, 2)),
+            hexdec(substr($configuration, 8, 2)),
+            hexdec(substr($configuration, 10, 2))
         ], 100);
         $sideSpriteForegroundColor = new RGB($palette, [
-            hexdec(substr($hash, 12, 2)),
-            hexdec(substr($hash, 14, 2)),
-            hexdec(substr($hash, 16, 2))
+            hexdec(substr($configuration, 12, 2)),
+            hexdec(substr($configuration, 14, 2)),
+            hexdec(substr($configuration, 16, 2))
         ], 100);
         $centerSpriteForegroundColor = new RGB($palette, [
-            hexdec(substr($hash, 18, 2)),
-            hexdec(substr($hash, 20, 2)),
-            hexdec(substr($hash, 22, 2))
+            hexdec(substr($configuration, 18, 2)),
+            hexdec(substr($configuration, 20, 2)),
+            hexdec(substr($configuration, 22, 2))
         ], 100);
         $centerSpriteBackgroundColor = new RGB($palette, [
-            hexdec(substr($hash, 24, 2)),
-            hexdec(substr($hash, 26, 2)),
-            hexdec(substr($hash, 28, 2))
+            hexdec(substr($configuration, 24, 2)),
+            hexdec(substr($configuration, 26, 2)),
+            hexdec(substr($configuration, 28, 2))
         ], 100);
 
         $backgroundColor = new RGB($palette, [255, 255, 255], 100);

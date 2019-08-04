@@ -42,8 +42,8 @@ class IdenticonsController extends ActionController
         $this->response->setHeader('Cache-Control', sprintf('max-age=%i, public', $ttl));
         $this->response->setHeader('Expires', date(DATE_RFC1123, time()+$ttl));
 
-        $hash = IdenticonConfiguration::create($hash, $s ?: $this->settingsService->getDefaultIconSize());
-        $image = $this->identiconFactory->create($hash);
+        $configuration = IdenticonConfiguration::create($hash, $s ?: $this->settingsService->getDefaultIconSize());
+        $image = $this->identiconFactory->create($configuration);
 
         return $image;
     }

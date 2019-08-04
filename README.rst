@@ -1,6 +1,6 @@
-***********************************
-FLOW Package to generate Identicons
-***********************************
+**************************************************
+Neos Flow Framework Package to generate Identicons
+**************************************************
 
 This contains the Flow Framework package "Ttree.Identicons" to generate Identicons. Currently only two generators are
 available: Don Park (original version) and Github Style (inspired by the space invader style identicons provided by
@@ -111,7 +111,7 @@ You can write your own generator, just implement the GeneratorInterface and chan
 your Objects.yaml (check the Objects.yaml from this package for the syntax).
 
 **Warning**: if you change the Generator, currently you need to truncate the table "ttree_identicons_domain_model_identicon"
-manually. This will change in a future release.
+manually.
 
 ==================
 Identicons Samples

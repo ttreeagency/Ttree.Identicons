@@ -26,21 +26,21 @@ class GithubLikeGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(IdenticonConfiguration $hash)
+    public function generate(IdenticonConfiguration $configuration)
     {
-        parent::generate($hash);
+        parent::generate($configuration);
         
         $size = $this->defaultSize;
-        $hash = $hash->getOriginalHash();
+        $configuration = $configuration->getOriginalHash();
 
-        $topCornerSpriteShape = hexdec(substr($hash, 0, 1));
-        $bottomCornerSpriteShape = hexdec(substr($hash, 1, 1));
-        $topMiddleSpriteShape = hexdec(substr($hash, 2, 1)) & 2;
-        $middleSideSpriteShape = hexdec(substr($hash, 3, 1)) & 2;
-        $centerSpriteShape = hexdec(substr($hash, 4, 1)) & 2;
-        $bottomSpriteShape = hexdec(substr($hash, 5, 1)) & 7;
+        $topCornerSpriteShape = hexdec(substr($configuration, 0, 1));
+        $bottomCornerSpriteShape = hexdec(substr($configuration, 1, 1));
+        $topMiddleSpriteShape = hexdec(substr($configuration, 2, 1)) & 2;
+        $middleSideSpriteShape = hexdec(substr($configuration, 3, 1)) & 2;
+        $centerSpriteShape = hexdec(substr($configuration, 4, 1)) & 2;
+        $bottomSpriteShape = hexdec(substr($configuration, 5, 1)) & 7;
 
-        $this->generateForegroundColor($hash);
+        $this->generateForegroundColor($configuration);
 
         $identicon = $this->createImage($size * 2.5, $size * 2.5);
 
